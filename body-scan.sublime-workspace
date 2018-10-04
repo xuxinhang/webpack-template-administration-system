@@ -1,0 +1,934 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"dis",
+				"disabled"
+			],
+			[
+				"st",
+				"stat"
+			],
+			[
+				"data",
+				"dataset"
+			],
+			[
+				"moc",
+				"mocked"
+			],
+			[
+				"res",
+				"resolve"
+			],
+			[
+				"page",
+				"pageSize"
+			],
+			[
+				"sat",
+				"state"
+			],
+			[
+				"fetch",
+				"fetchListData"
+			],
+			[
+				"total",
+				"totalRecord"
+			],
+			[
+				"pag",
+				"paginationProps"
+			],
+			[
+				"curren",
+				"currentPage"
+			],
+			[
+				"fro",
+				"frozen"
+			],
+			[
+				"tack",
+				"taskStatistics"
+			],
+			[
+				"list",
+				"listData"
+			],
+			[
+				"class",
+				"className"
+			],
+			[
+				"Add",
+				"AddOperator"
+			],
+			[
+				"Ad",
+				"AddOrganization"
+			],
+			[
+				"pa",
+				"pages"
+			],
+			[
+				"submit",
+				"submitStage"
+			],
+			[
+				"submi",
+				"submit"
+			],
+			[
+				"submir",
+				"submitBtnProps"
+			],
+			[
+				"form",
+				"formSubmitHandler"
+			],
+			[
+				"value",
+				"values"
+			],
+			[
+				"box",
+				"box-sizing"
+			],
+			[
+				"layour",
+				"layout-sider"
+			],
+			[
+				"lay",
+				"layout-frame"
+			],
+			[
+				"styl",
+				"style"
+			],
+			[
+				"logout",
+				"logoutLoading"
+			],
+			[
+				"da",
+				"dataViewLinks"
+			],
+			[
+				"back",
+				"background-color"
+			],
+			[
+				"user",
+				"username"
+			],
+			[
+				"U",
+				"UserCtx"
+			],
+			[
+				"style",
+				"styleName"
+			],
+			[
+				"css",
+				"css-loader"
+			],
+			[
+				"modu",
+				"modules"
+			],
+			[
+				"module",
+				"modules"
+			],
+			[
+				"app",
+				"appSrc"
+			],
+			[
+				"ba",
+				"baseConfig"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "src/pages/AddItem/index.js",
+			"settings":
+			{
+				"buffer_size": 5210,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "src/pages/Admin/index.js",
+			"settings":
+			{
+				"buffer_size": 5910,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "src/pages/AddOrganization/index.js",
+			"settings":
+			{
+				"buffer_size": 5277,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "src/pages/AddOrganization/AddOrganization.md.sass",
+			"settings":
+			{
+				"buffer_size": 228,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "src/Main.js",
+			"settings":
+			{
+				"buffer_size": 2032,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "src/pages/OperatorList/index.js",
+			"settings":
+			{
+				"buffer_size": 4774,
+				"encoding": "UTF-8",
+				"line_ending": "Windows",
+				"name": "index.js"
+			}
+		},
+		{
+			"file": "src/styles/common.sass",
+			"settings":
+			{
+				"buffer_size": 398,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "src/utils/apier.js",
+			"settings":
+			{
+				"buffer_size": 3669,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "src/pages/OperatorList/OperatorList.md.css",
+			"settings":
+			{
+				"buffer_size": 263,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "docs/api_doc.txt",
+			"settings":
+			{
+				"buffer_size": 8244,
+				"encoding": "UTF-8",
+				"line_ending": "Windows",
+				"name": "FORMAT: 1A"
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"blue",
+				"API Blueprint: Parse to API Elements (JSON)"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"disabl",
+				"Package Control: Disable Package"
+			],
+			[
+				"remo",
+				"Package Control: Remove Package"
+			],
+			[
+				"insta",
+				"Package Control: Install Package"
+			],
+			[
+				"Package Control: dis",
+				"Package Control: Disable Package"
+			],
+			[
+				"Package Control: install",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 0.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/F/GitWorkshop/body-scan",
+		"/F/GitWorkshop/body-scan/config",
+		"/F/GitWorkshop/body-scan/docs",
+		"/F/GitWorkshop/body-scan/public",
+		"/F/GitWorkshop/body-scan/src",
+		"/F/GitWorkshop/body-scan/src/pages",
+		"/F/GitWorkshop/body-scan/src/pages/Admin",
+		"/F/GitWorkshop/body-scan/src/pages/OperatorList",
+		"/F/GitWorkshop/body-scan/src/styles",
+		"/F/GitWorkshop/body-scan/src/utils"
+	],
+	"file_history":
+	[
+		"/F/GitWorkshop/body-scan/src/pages/OperatorList/OperatorList.md.css",
+		"/F/GitWorkshop/body-scan/src/pages/OperatorList/OperatorList.md.sass",
+		"/F/GitWorkshop/body-scan/.babelrc",
+		"/F/GitWorkshop/body-scan/src/index.js",
+		"/F/GitWorkshop/body-scan/src/pages/Login/index.js",
+		"/F/GitWorkshop/body-scan/src/pages/ModifyPassword/index.js",
+		"/F/GitWorkshop/body-scan/config/webpack.config.dev.js",
+		"/F/GitWorkshop/body-scan/config/env.js",
+		"/F/GitWorkshop/body-scan/config/webpack.config.prod.js",
+		"/F/GitWorkshop/body-scan/config/webpack.config.base.js",
+		"/F/GitWorkshop/body-scan/src/pages/AddOperator/AddOperator.md.sass",
+		"/F/GitWorkshop/body-scan/src/pages/AddOperator/index.js",
+		"/F/GitWorkshop/body-scan/src/pages/AddOrganization/index.js",
+		"/F/GitWorkshop/body-scan/src/pages/Admin/index.js",
+		"/F/GitWorkshop/body-scan/src/utils/apier.js",
+		"/F/GitWorkshop/body-scan/src/pages/Admin/Admin.md.sass",
+		"/F/GitWorkshop/body-scan/src/pages/AddItem/AddItem.md.sass",
+		"/F/GitWorkshop/body-scan/src/styles/vars.sass",
+		"/F/GitWorkshop/body-scan/src/pages/AddOrganization/AddOrganization.md.sass",
+		"/F/GitWorkshop/body-scan/src/styles/full-forms.sass",
+		"/F/GitWorkshop/body-scan/src/pages/ModifyPassword/ModifyPassword.md.sass",
+		"/F/GitWorkshop/body-scan/src/comps/PageHeader/PageHeader.md.sass",
+		"/F/GitWorkshop/body-scan/src/Main.js",
+		"/F/GitWorkshop/body-scan/.browserslistrc",
+		"/F/GitWorkshop/body-scan/src/pages/Admin/Admin.css",
+		"/F/GitWorkshop/body-scan/.postcssrc.js",
+		"/F/GitWorkshop/body-scan/src/pages/AddItem/index.js",
+		"/F/GitWorkshop/body-scan/src/comps/PageHeader/index.js",
+		"/F/GitWorkshop/body-scan/src/styles/common.sass",
+		"/F/GitWorkshop/body-scan/src/styles/global.css",
+		"/F/GitWorkshop/body-scan/src/pages/DataManage/index.js",
+		"/F/GitWorkshop/body-scan/src/Main.md.sass",
+		"/F/GitWorkshop/body-scan/src/pages/Admin/admin.router.js",
+		"/F/GitWorkshop/body-scan/src/index.css",
+		"/F/GitWorkshop/body-scan/src/pages/Login/Login.md.sass",
+		"/F/GitWorkshop/body-scan/src/contexts/contexts.js",
+		"/F/GitWorkshop/body-scan/src/App.md.sass",
+		"/F/GitWorkshop/body-scan/src/App.md.styl",
+		"/F/GitWorkshop/body-scan/package.json",
+		"/F/GitWorkshop/body-scan/src/App.js",
+		"/F/GitWorkshop/body-scan/src/App.module.css",
+		"/F/GitWorkshop/body-scan/src/App.css",
+		"/F/GitWorkshop/body-scan/config/paths.js",
+		"/F/GitWorkshop/body-scan/public/index.html",
+		"/F/GitWorkshop/body-scan/.eslintignore",
+		"/F/GitWorkshop/body-scan/.eslintrc.json",
+		"/F/GitWorkshop/body-scan/scripts/react-scripts.js",
+		"/F/GitWorkshop/body-scan/node_modules/react-scripts/package.json",
+		"/F/GitWorkshop/body-scan/node_modules/react-scripts/bin/react-scripts.js"
+	],
+	"find":
+	{
+		"height": 44.0
+	},
+	"find_in_files":
+	{
+		"height": 121.0,
+		"where_history":
+		[
+			"F:\\GitWorkshop\\body-scan\\src",
+			"F:\\GitWorkshop\\body-scan\\scripts",
+			"F:\\GitWorkshop\\body-scan\\config",
+			"F:\\GitWorkshop\\body-scan",
+			"F:\\GitWorkshop\\body-scan\\src"
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"op_id",
+			"fetchListData",
+			"setState",
+			"react-app",
+			"InterpolateHtmlPlugin",
+			"CaseSensitivePathsPlugin",
+			"env",
+			"publicUrl",
+			"org",
+			"(o|O)perater",
+			"operater",
+			"form-row",
+			"styleName",
+			"content",
+			"css",
+			"context",
+			"process.env",
+			"production",
+			"shouldUseSourceMap",
+			"shouldUseRelativeAssetPaths",
+			"paths",
+			"babel",
+			"appDirectory",
+			"module.exports"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"\\1perator"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 1,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "src/pages/AddItem/index.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5210,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4384,
+								4384
+							]
+						],
+						"settings":
+						{
+							"auto_complete_triggers":
+							[
+								{
+									"characters": "<",
+									"selector": "text.html"
+								},
+								{
+									"characters": ".#",
+									"selector": "text.html"
+								}
+							],
+							"syntax": "Packages/Naomi/syntaxes/naomi.fjsx15.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 2346.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "src/pages/Admin/index.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5910,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1099,
+								1099
+							]
+						],
+						"settings":
+						{
+							"auto_complete_triggers":
+							[
+								{
+									"characters": "<",
+									"selector": "text.html"
+								},
+								{
+									"characters": ".#",
+									"selector": "text.html"
+								}
+							],
+							"syntax": "Packages/Naomi/syntaxes/naomi.fjsx15.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 483.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "src/pages/AddOrganization/index.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5277,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2257,
+								2274
+							]
+						],
+						"settings":
+						{
+							"auto_complete_triggers":
+							[
+								{
+									"characters": "<",
+									"selector": "text.html"
+								},
+								{
+									"characters": ".#",
+									"selector": "text.html"
+								}
+							],
+							"syntax": "Packages/Naomi/syntaxes/naomi.fjsx15.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 3381.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "src/pages/AddOrganization/AddOrganization.md.sass",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 228,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3,
+								3
+							]
+						],
+						"settings":
+						{
+							"auto_complete_triggers":
+							[
+								{
+									"characters": "<",
+									"selector": "text.html"
+								},
+								{
+									"characters": ".#",
+									"selector": "text.html"
+								}
+							],
+							"syntax": "Packages/Sass/Syntaxes/Sass.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 9,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "src/Main.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2032,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								311,
+								311
+							]
+						],
+						"settings":
+						{
+							"auto_complete_triggers":
+							[
+								{
+									"characters": "<",
+									"selector": "text.html"
+								},
+								{
+									"characters": ".#",
+									"selector": "text.html"
+								}
+							],
+							"syntax": "Packages/Naomi/syntaxes/naomi.fjsx15.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 8,
+					"type": "text"
+				}
+			]
+		},
+		{
+			"selected": 0,
+			"sheets":
+			[
+				{
+					"buffer": 5,
+					"file": "src/pages/OperatorList/index.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4774,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2071,
+								2071
+							]
+						],
+						"settings":
+						{
+							"auto_name": "index.js",
+							"syntax": "Packages/Naomi/syntaxes/naomi.fjsx15.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 1702.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "src/styles/common.sass",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 398,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								250,
+								250
+							]
+						],
+						"settings":
+						{
+							"auto_complete_triggers":
+							[
+								{
+									"characters": "<",
+									"selector": "text.html"
+								},
+								{
+									"characters": ".#",
+									"selector": "text.html"
+								}
+							],
+							"syntax": "Packages/Sass/Syntaxes/Sass.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 138.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "src/utils/apier.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3669,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3111,
+								3111
+							]
+						],
+						"settings":
+						{
+							"auto_complete_triggers":
+							[
+								{
+									"characters": "<",
+									"selector": "text.html"
+								},
+								{
+									"characters": ".#",
+									"selector": "text.html"
+								}
+							],
+							"syntax": "Packages/Naomi/syntaxes/naomi.fjsx15.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 2415.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "src/pages/OperatorList/OperatorList.md.css",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 263,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								187,
+								187
+							]
+						],
+						"settings":
+						{
+							"auto_complete_triggers":
+							[
+								{
+									"characters": "<",
+									"selector": "text.html"
+								},
+								{
+									"characters": ".#",
+									"selector": "text.html"
+								}
+							],
+							"syntax": "Packages/Naomi/syntaxes/naomi.css3.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "docs/api_doc.txt",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 8244,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3197,
+								3208
+							]
+						],
+						"settings":
+						{
+							"auto_name": "FORMAT: 1A",
+							"syntax": "Packages/Text/Plain text.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 3004.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 33.0
+	},
+	"input":
+	{
+		"height": 45.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			],
+			[
+				0,
+				1,
+				1,
+				2
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			0.0822021116139,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.CSS Extended Completions":
+	{
+		"height": 0.0
+	},
+	"output.SublimeLinter":
+	{
+		"height": 0.0
+	},
+	"output.SublimeLinter Messages":
+	{
+		"height": 156.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "body-scan.sublime-project",
+	"replace":
+	{
+		"height": 62.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 1,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 218.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

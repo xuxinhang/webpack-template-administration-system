@@ -1,0 +1,11 @@
+.ant-menu-item {
+  border: none;
+  border-left: 3px solid transparent;
+  background-color: transparent !important;
+}
+
+.ant-menu-item-selected {
+  border-left: 3px solid #02bbf1;
+  background-color: transparent !important;
+  background-image:linear-gradient(90deg, rgba(126,142,218,13%) 0%, rgba(255,255,255,0.00) 92%);
+}

@@ -1,0 +1,28 @@
+{
+  "presets": [
+    "@babel/preset-react",
+    [
+      "@babel/preset-env",
+      {
+        "useBuiltIns": "usage"
+      }
+    ],
+  ],
+  "plugins": [
+    ["react-hot-loader/babel"],
+    ["react-css-modules", {
+      "filetypes": {
+        ".sass": {
+          "syntax": "sugarss",
+        },
+      },
+      "webpackHotModuleReloading": true,
+      // "handleMissingStyleName": "ignore",
+      "exclude": "styles",
+    }],
+    ["import", {
+      "libraryName": "antd",
+      "style": "css",
+    }],
+  ]
+}

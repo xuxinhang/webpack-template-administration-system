@@ -1,0 +1,13 @@
+.ds-ant-table-wrapper {
+  
+}
+
+.ds-ant-table-wrapper :global(.ant-table-small) {
+  border-style: none !important;
+  border-bottom-style: solid !important;
+  border-radius: 0 !important;
+}
+
+.ds-ant-table-wrapper :global(.ant-table-body) {
+  margin: 0 !important;
+}

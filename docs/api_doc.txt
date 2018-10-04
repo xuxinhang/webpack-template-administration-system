@@ -1,0 +1,302 @@
+FORMAT: 1A
+HOST: http://admin.body-scan.org/
+
+# Body Scan
+
+## [TODO]
++ 登录时密码使用明文还是哈希
++ 使用 POST 还是 GET
+
+## 修订指引
++ 不清楚不确定的地方都用了`[TODO]`标记
++ 键名可以修改. 遇到 Chinglish 请直接改过来, 感谢!
++ 这里很多小驼峰. 喜欢其他的命名风格就换过来吧!
+
+## 一些基本的约定
++ 身份验证: token机制, 每次请求的Header中会带上 `Auth-Token`, 内容为Token值.
++ 请求体结构: 默认 MIME 是 `application/json`
++ 响应体结构: 由状态标识`status`, 数据载荷`data`, 其他元信息组成.
+
+    ```json
+    {
+      status: {    // (object) 状态标识
+        code: 200, // (any)    状态码
+        msg: '',   // (string) 提示信息
+      },
+      
+      data: {},    // (any) 不同的接口不同
+      
+      // 其它元数据 例如页面计数数据
+    }  
+    ```
+
++ 状态码和提示信息(需要后台来设计)
+
+    本API状态码可以仿HTTP状态码风格. 具体的状态码接下来仍需设计.
+    ```
+    2xx - OK
+    4xx - Request Invalid
+    5xx - Server Error
+    ```
+    当然,使用`string`作为状态码也可以. (后台怎么喜欢怎么来).
+    此外,提示信息应该是人类可读的.
+
++ 状态码表 (后台来写)
+    ```
+    ```
+
+## Data Structures
+
+### Status
+
++ code: 200 (number, required)
++ msg: Some messages. (string)
+
+### VaccantResp
+
++ status (Status)
++ data(object) - 缺这一项也可
+
+### pagination
+
++ pageNumber: 3 (number) - 页码,从0开始计数 (默认为第一页)
++ pageSize: 20 (number) - 每页的条目数量 (默认10条)
+
+### pageinfo
++ totalPage: 100 (number) - 一共多少页
++ totalRecord: 10000 (number) - 一共多少条记录
+
+
+# Group 用户系统
+
+## 登录 [/login]
+    
+### Login [POST]
++ Request (application/json)
+    + Attributes
+        + username: haha (string) - 用户名
+        + password: password (string) - 密码
++ Response 200 (application/json)
+    + Attributes
+        + token: authority_token (string) - Token
+        + ident: 1 (number) - 账户身份
+
+## 登出 [/logout]
+### Logout [POST]
++ Request (application/json)
+    + Headers
+
+            Auth-Token: Some Token
+
++ Response 200 (application/json)
+    + Attributes
+        + status (Status)
+
+## 改密 [/modifyPassword]
+### modify pwd [POST]
++ Request (application/json)
+    + Attributes
+        + prevPwd(string) - 原密码
+        + newPwd(string)  - 新密码
++ Response 200 (application/json)
+    + Attributes(VaccantResp)
+
+
+# Group 操作员
+
+## 添加操作员  [/operator/add]
+### addOperator [POST]
++ Request (application/json)
+    + Attributes
+        + name: 姓名 (required, string)
+        + tel: 电话 (required, string)
++ Response 200 (application/json)
+    + Attributes
+        + status(Status)
+        + data
+            + operator_id: 99 (number, required) - 操作员ID
+
+## 获取操作员列表 [/operator/list]
+### list operator [POST]
++ Request (application/json)
+    + Attributes
+        + pagination (pagination) - 如何分页
++ Response 200 (application/json)
+    + Attributes
+        + pageInfo(pageinfo) - 记录了关于页的一些信息
+        + status(Status)
+        + data(array)
+            + (object)
+                + operator_id: 23 (number, required) - 操作员ID
+                + bianhao: 01 (number) - [TODO] 编号是什么东东?
+                + name: 会会艰 (string) - 姓名
+                + created_time: 2016/09/12 (string) - 创建时间
+                + tel: 13853321909 (string)
+                + password: my_password (string) - 明文密码
+                + task_statistics
+                    + received: 13 (number) - 领取数
+                    + processing: 5 (number) - 处理中
+                    + confirming: 3 (number) - 等待确认
+                    + finished: 32 (number) - 已完成
+
+## 冻结/解冻操作员号 [/operator/freeze]
+### freeze operator [POST]
++ Request (application/json)
+    + Attributes
+        + operator_id: 23 (number, required) - 操作员ID
+        + action(number, required) - 2 = 冻结, 1 = 解冻
++ Response 200 (application/json)
+    + Attributes(VaccantResp)
+
+
+# Group Organization
+
+## 添加机构号 [/organization/add]
+### addorgs [POST]
++ Request (application/json)
+    + Attributes
+        + name: Bob (string) - 姓名
+        + gender: male (string) - 性别
+        + belong: 法医中心 (string) - 机构名称
+        + email: xxx@we.cc (string) - 电子邮件
+        + tel: 13453535348 (string)
+        + idcard: 370983XXXX (string) - 身份证
+        + address: 伴米路1033号 (optional, string) - 邮寄地址
++ Response 200 (application/json)
+    + Attributes
+        + status (Status)
+        + data
+            + org_id: 23 (number) - 机构号ID
+
+## 获取机构号列表 [/organization/list]
+### getorgs [POST]
++ Request (application/json)
+    + Attributes
+        + pagination (pagination)
++ Response 200 (application/json)
+    + Attributes
+        + pageInfo(pageinfo) - 记录了关于页的一些信息
+        + status(Status)
+        + data(array)
+            + (object)
+                + org_id: 23 (number, required) - 机构号ID
+                + bianhao: 01 (number) - [TODO] 编号是什么东东?
+                + name: 会会艰 (string) - 姓名
+                + created_time: 2016/09/12 (string) - 创建时间
+                + tel: 13853321909 (string)
+                + password: my_password (string) - 明文密码
+                + belong: 法医中心 (string) - 所属机构名称
+                + email: bob@ww.cc (string)
+                + taskNumber: 124 (number) - 任务数
+
+## 冻结/解冻机构号 [/organization/freeze]
+### freezeorgs [POST]
++ Request (application/json)
+    + Attributes
+        + org_id: 23 (number, required) - 机构号ID
+        + action(number, required) - 2 = 冻结, 1 = 解冻
++ Response 200 (application/json)
+    + Attributes(VaccantResp)
+    
+
+# Group 任务管理相关 
+
+## 添加任务 [/tasks/add]
+### add task [POST]
++ Request (multipart/form-data)
+    + Attributes
+        + name: 老爹肚 (string)
+        + gender: male (string)
+        + idcard: 370 (string)
+        + part: 腹部 (string) - 测量部位
+        + method: 瞎蒙法 (string) - 测量方法
+        + time: 2018/09/01 (string) - 测量时间
+        + description: 明显没问题 (string) - 测量情况概述
+        + attachment - 二进制任务附件文件
++ Response 200 (application/json)
+    + Attributes
+        + status(Status)
+        + data
+            + task_id: 1 (number) - 任务ID
+
+## 任务列表 [/tasks/list]
+### list tasks [POST]
+不同的身份下,获取的任务列表有不同的值. 三种身份下公用一个URI.
++ Request (application/json)
+    + Attributes
+        + pagination (pagination)
++ Response 200 (application/json)
+    + Attributes
+        + pageInfo(pageinfo) - 记录了关于页的一些信息
+        + status(Status)
+        + data(array)
+            + (object)
+                + task_id: 78 (number) - 任务ID
+                + name: 相对肝 (string) - 检测对象
+                + gender: male (string)
+                + created_time: 2018/10/03 (string) - 条目创建时间
+                + operator_name: 腾达建 (string) - 操作员姓名
+                + org_name: 仁人君 (string) - 机构客户姓名
+                + org_belong: 法医中心 (string) - 机构客户所属机构
+                + part: 腹部 (string) - 测量部位
+                + stage(enum) - 任务处理阶段
+                    + receiving(string)
+                    + processing(string)
+                    + confirming(string)
+                    + finished(string)
+
+## 任务详情 [/tasks/detail/{task_id}]
+### task detail [GET]
+表格下拉出来的那些内容
++ Parameters
+    + task_id: 78 (number) - 任务ID
++ Response 200 (application/json)
+    + Attributes
+        + task_detail(object) - 除了年龄字段, 把"添加任务"里上传的返回来就好了
+            + name: 老爹肚 (string)
+            + gender: male (string)
+            + idcard: 370XXXXXXXXXXX (string)
+            + part: 腹部 (string) - 测量部位
+            + method: 瞎蒙法 (string) - 测量方法
+            + time: 2018/09/01 (string) - 测量时间
+            + description: 明显没问题 (string) - 测量情况概述
+            + age: 28 (number) - [新增] 年龄
+        + operator_detail(object) - 把"添加操作员"里上传的返回来就好了
+            + name: 操作员姓名 (string)
+            + tel: 操作员电话 (string)
+        + stage(enum) - 任务阶段
+            + receiving(string)
+            + processing(string)
+            + confirming(string)
+            + finished(string)
+        + task_attachment_is_downloaded: true (boolean) - 操作员是否已下载附件
+        + task_attachment_url: https://body-scan.com/path/to/atta (string) - 机构号新建任务时上传的附件
+        + task_report_url: https://body-scan.com/path/to/report (string) - 由操作员上传的报告文件(没有报告文件就留空)
+        + can_operator_confirm: false (boolean) - 操作员是否可以进行确认操作了
+
+## 任务操作:操作员领取 [/tasks/operate/{task_id}?action=receive]
+### task receive [GET]
++ Parameters
+    + task_id: 78 (number) - 任务ID
++ Response 200 (application/json)
+    + Attributes(VaccantResp)
+
+## 任务操作:操作员上传报告并标记为处理完成 [/tasks/operate/{task_id}?action=process]
+### task process [POST]
+这一操作(上传报告)可以被执行多次, 新上传文件覆盖原文件.
++ Request (multipart/form-data)
+    + Attributes
+        + task_id: 78 (number) - 任务ID
+        + report_file - 二进制报告文件
++ Response 200 (application/json)
+    + Attributes(VaccantResp)
+
+## 任务操作:操作员或机构号进行确认 [/tasks/operate/{task_id}?action=confirm]
+### task confirm [GET]
+操作员或机构号都可执行此操作
++ Parameters
+    + task_id: 78 (number) - 任务ID
++ Response 200 (application/json)
+    + Attributes(VaccantResp)
+    
+
