@@ -6,7 +6,7 @@ import Mock from 'mockjs';
 const usefulMockData = {
   pageInfo: { totalPage: 100, totalRecord: 12694 },
   okStat: { code: 200, msg: 'OK' },
-  failStat: { code: 400, msg: 'Some Errors Occured.' },
+  failStat: { code: 400, frimsg: 'Some Errors Occured.' },
 };
 
 const filters = {
@@ -128,6 +128,45 @@ const filters = {
           reject({stat: usefulMockData.failStat});
         }
       }, 2230);
+    },
+  },
+  listOrganizations: {
+    method: 'POST',
+    url: '',
+    handler: (resolve, reject, name, input) => {
+      let mocked = Mock.mock({
+        data: {
+          pageInfo: usefulMockData.pageInfo,
+          [`list|${input.pagination.pageSize}`]: [{
+            'org_id|+1': 16,
+            'num|+1': 16,
+            'name': '@cname',
+            'created_time': '@date',
+            'tel': '13853321909',
+            'password': '@word',
+            'belong': '法医中心',
+            'email': 'we@we.com',
+            'task_number|25-299': 0,
+            'frozen|1': [2, 1],
+          }],
+        },
+        stat: usefulMockData.okStat,
+      });
+      setTimeout(() => resolve(mocked), 1230);
+    }
+  },
+  // 冻结解冻机构账户
+  freezeOrganization: {
+    method: 'POST',
+    url: '/',
+    handler: (resolve, reject, name, input) => {
+      setTimeout(() => {
+        if(input.org_id % 2) {
+          resolve({stat: usefulMockData.okStat});
+        } else {
+          reject({stat: usefulMockData.failStat});
+        }
+      }, 1230);
     },
   },
 };

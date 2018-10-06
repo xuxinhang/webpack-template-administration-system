@@ -7,23 +7,26 @@ import sty from './Admin.md.sass';
 // import _ from './Admin.css';
 
 import { UserCtx } from '@/contexts/contexts.js';
-import { ItemManage } from '@/pages/DataManage';
-import { AddItem } from '@/pages/AddItem';
+import { TaskManage } from '@/pages/TaskManage';
+import { AddTask } from '@/pages/AddTask';
 import { ModifyPassword } from '@/pages/ModifyPassword';
 import { AddOrganization } from '@/pages/AddOrganization';
 import { AddOperator } from '@/pages/AddOperator';
 import { OperatorList } from '@/pages/OperatorList';
+import { OrganizationList } from '@/pages/OrganizationList';
 
 // Routes for different identities
-const withItemManageStatus = ({match}) => {
-  return <ItemManage dataStatus={match.params.dataStatus} />;
-};
+const withTaskManageStatus = ({match}) => (
+  <TaskManage defaultFilters={{
+    taskState: match.params.taskState,
+  }} />
+);
 
 const pageRoutes = [
-  { path: 'itemManage/:dataStatus', component: withItemManageStatus, access: ['operator', 'administrator', 'organization'] },
-  { path: 'addItem', component: AddItem, access: ['organization'] },
+  { path: 'taskManage/:taskState', component: withTaskManageStatus, access: ['operator', 'administrator', 'organization'] },
+  { path: 'addTask', component: AddTask, access: ['organization'] },
   { path: 'operatorManage', component: OperatorList, access: ['administrator'] },
-  { path: 'organizationManage', access: ['administrator'] },
+  { path: 'organizationManage', component: OrganizationList, access: ['administrator'] },
   { path: 'modifyPassword', access: -1, component: ModifyPassword },
   { path: 'addOrganization', component: AddOrganization, access: ['administrator'] },
   { path: 'addOperator', component: AddOperator, access: ['administrator'] },
@@ -33,9 +36,9 @@ const menuLinks = [
   {
     name: '数据管理',
     menus: [
-      { path: 'itemManage/following', title: '跟进中', access: ['operator', 'administrator', 'organization'] },
-      { path: 'itemManage/finished',  title: '已完结', access: ['operator', 'administrator', 'organization'] },
-      { path: 'itemManage/vacant',    title: '未领取', access: ['operator', 'administrator', 'organization'] },
+      { path: 'taskManage/following', title: '跟进中', access: ['operator', 'administrator', 'organization'] },
+      { path: 'taskManage/finished',  title: '已完结', access: ['operator', 'administrator', 'organization'] },
+      { path: 'taskManage/vacant',    title: '未领取', access: ['operator', 'administrator', 'organization'] },
     ]
   }, {
     name: '账号管理',
@@ -48,7 +51,7 @@ const menuLinks = [
   }, {
     name: '操作中心',
     menus: [
-      { path: 'addItem', title: '新建项目', access: ['organization'] },
+      { path: 'addTask', title: '新建项目', access: ['organization'] },
     ],
   },
 ];
@@ -76,7 +79,7 @@ class Admin extends Component {
   }
 
   render() {
-    console.log(this.props);
+    // console.log(this.props);
     return (
       <div styleName="sty.layout-frame">
         <div styleName="sty.layout-sider-wrap">
@@ -111,6 +114,11 @@ class Admin extends Component {
               </Menu>
             }
             </UserCtx.Consumer>
+            <p styleName="sty.layout-sider_bottom">
+              <span styleName="sty.copyright">
+                © 2018 BodyScan.<wbr />All Rights Reserved.
+              </span>
+            </p>
           </div>
         </div>
         <div styleName="sty.layout-body" style={{ flex: '1' }}>

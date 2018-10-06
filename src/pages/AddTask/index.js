@@ -4,10 +4,9 @@ const { TextArea } = Input;
 import { PageHeader } from '@/comps/PageHeader';
 import apier from '@/utils/apier.js';
 
-import '../../styles/common.sass';
-import './AddItem.md.sass';
+import './AddTask.md.sass';
 
-class AddItem extends React.Component {
+class AddTask extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -185,4 +184,4 @@ const WrappedForm = Form.create()(RawForm);
 
 
 
-export { AddItem };
+export { AddTask };

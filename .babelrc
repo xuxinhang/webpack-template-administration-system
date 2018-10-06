@@ -9,7 +9,7 @@
     ],
   ],
   "plugins": [
-    ["react-hot-loader/babel"],
+    // ["react-hot-loader/babel"],
     ["react-css-modules", {
       "filetypes": {
         ".sass": {
@@ -17,7 +17,7 @@
         },
       },
       "webpackHotModuleReloading": true,
-      // "handleMissingStyleName": "ignore",
+      "handleMissingStyleName": "ignore",
       "exclude": "styles",
     }],
     ["import", {

@@ -4,7 +4,7 @@
   display: flex
   flex-direction: row
   width: 100%
-  min-width: 62em
+  // min-width: 62em
   min-height: 100vh
   height: 100vh
   margin: 0 auto
@@ -13,10 +13,12 @@
 .layout-sider-wrap
   width: 17%
   max-width: 25em
-  min-width: 16em
+  min-width: 11em
   overflow: hidden
 
 .layout-sider
+  display: flex
+  flex-direction: column
   width: 100%
   height: 100%
   margin-right: -20px
@@ -31,6 +33,7 @@
     transition: 0.1s margin-right, 0.1s padding-right
 
 .layout-sider_top
+  flex: 0 0
   width: 100%
   height: 45px
   margin: 0 auto
@@ -41,6 +44,7 @@
     font-style: normal
 
 .layout-sider_menu
+  flex: 1 1
   margin-bottom: 2em
   background-color: transparent
 
@@ -50,7 +54,17 @@
 .layout-sider_menu_group_title
   padding-left: 1.3em
   font-size: 0.86em
-  color:#8992ca
+  color: #8992ca
+
+.layout-sider_bottom
+  flex: 0 0
+  padding: 0.2em 0.4em
+  text-align: center
+
+.copyright
+  font-size: 11px
+  color: #8992ca
+  // word-break: no-break
 
 .layout-body
   flex: 1

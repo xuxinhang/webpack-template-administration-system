@@ -3,7 +3,9 @@ import { withRouter } from 'react-router';
 import { Router, Route, HashRouter, Redirect, Switch } from 'react-router-dom';
 import Login from './pages/Login';
 import Admin from './pages/Admin';
+
 import './Main.md.sass';
+import './styles/common.sass';
 
 import { UserCtx } from './contexts/contexts.js';
 
@@ -53,13 +55,13 @@ class Main extends Component {
         <HashRouter>
           <UserCtx.Provider value={this.state.userLoginInfo}>
             <UserCtx.Consumer>
-              {info => [
+              {info => (
               <Switch>
                 {(!info.token) && <Route path="/login" component={withRouter(Login)} />}
                 {info.token    && <Route path="/admin" component={withRouter(Admin)} />}
                 <Redirect to={info.token ? '/admin' : '/login'} />
               </Switch>
-              ]}
+              )}
             </UserCtx.Consumer>
           </UserCtx.Provider>
         </HashRouter>

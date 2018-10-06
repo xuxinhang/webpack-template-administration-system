@@ -6,8 +6,7 @@ import apier from '@/utils/apier.js';
 
 import sty from './AddOperator.md.sass';
 // import '../../styles/common.sass';
-
-console.log(sty);
+// console.log(sty);
 
 class AddOperator extends React.Component {
   constructor(props) {
