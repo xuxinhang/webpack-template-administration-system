@@ -18,12 +18,12 @@ import { OrganizationList } from '@/pages/OrganizationList';
 // Routes for different identities
 const withTaskManageStatus = ({match}) => (
   <TaskManage defaultFilters={{
-    taskState: match.params.taskState,
+    taskStage: match.params.taskStage,
   }} />
 );
 
 const pageRoutes = [
-  { path: 'taskManage/:taskState', component: withTaskManageStatus, access: ['operator', 'administrator', 'organization'] },
+  { path: 'taskManage/:taskStage', component: withTaskManageStatus, access: ['operator', 'administrator', 'organization'] },
   { path: 'addTask', component: AddTask, access: ['organization'] },
   { path: 'operatorManage', component: OperatorList, access: ['administrator'] },
   { path: 'organizationManage', component: OrganizationList, access: ['administrator'] },
@@ -36,9 +36,9 @@ const menuLinks = [
   {
     name: '数据管理',
     menus: [
-      { path: 'taskManage/following', title: '跟进中', access: ['operator', 'administrator', 'organization'] },
+      { path: 'taskManage/progressing', title: '跟进中', access: ['operator', 'administrator', 'organization'] },
       { path: 'taskManage/finished',  title: '已完结', access: ['operator', 'administrator', 'organization'] },
-      { path: 'taskManage/vacant',    title: '未领取', access: ['operator', 'administrator', 'organization'] },
+      { path: 'taskManage/receiving',    title: '未领取', access: ['operator', 'administrator', 'organization'] },
     ]
   }, {
     name: '账号管理',

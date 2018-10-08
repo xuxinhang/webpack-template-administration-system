@@ -9,7 +9,7 @@
     ],
   ],
   "plugins": [
-    // ["react-hot-loader/babel"],
+    ["react-hot-loader/babel"],
     ["react-css-modules", {
       "filetypes": {
         ".sass": {
@@ -23,6 +23,9 @@
     ["import", {
       "libraryName": "antd",
       "style": "css",
+    }],
+    ["@babel/plugin-proposal-decorators", {
+      "decoratorsBeforeExport": false,
     }],
   ]
 }

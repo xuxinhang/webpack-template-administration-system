@@ -1,21 +1,153 @@
 import React from 'react';
-// import PageHeader from '@/comps/PageHeader';
+import { PageHeader } from '@/comps/PageHeader';
+import { Table, Button, Icon } from 'antd';
+const { Column } = Table;
+import { ExpandedDetailRow } from './ExpandedDetailRow';
+import apier from '@/utils/apier';
+// import bindThis from '@/utils/bind-this-decorator';
 
 
 class TaskManage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      taskListFilters: {...props.defaultFilters},
+      // 过滤条件
+      taskListFilters: { ...props.defaultFilters },
+      // UI
+      tableLoading: false,
+      currentPage: 1,
+      pageSize: 10,
+      totalRecord: 10,
+      // 数据
+      tableData: [{
+        'task_id': 16,
+        'num': 16,
+        'name': '@cname',
+        'gender': 1,
+        'created_time': '@date',
+        'org_name': '@cname',
+        'operator_name': '@cname',
+        'org_belong': '法医中心',
+        'part': '腹部',
+        'task_stage': 'receiving',
+      }],
+      tableExpandedRowKeys: [],
     };
+
+    this.paginationChangeHandler = this.paginationChangeHandler.bind(this);
+
   }
 
+  paginationChangeHandler(currentPage, pageSize) {
+    this.setState({ currentPage, pageSize });
+    this.fetchListData({
+      pagination: { pageNumber: currentPage, pageSize },
+    });
+  }
+
+  fetchListData({ pagination }) {
+    this.setState({ tableLoading: true });
+    // 计算过滤器的取值 more in furture
+    let filters = {
+      task_stage: this.state.taskListFilters.taskStage,
+    };
+
+    apier.fetch('listTasks', { pagination, filters })
+    .then(({ data, status }) => {
+      this.setState({
+        tableData: data.list,
+        totalRecord: data.pageInfo.totalRecord,
+      });
+    })
+    .catch(({ data, status }) => {
+      Message.warn('获取数据时出现错误：' + status.frimsg);
+    })
+    .finally(() => {
+      this.setState({ tableLoading: false });
+    });
+  }
+
+  componentDidMount() {
+    this.paginationChangeHandler(1, 10);
+  }
+
+
   render() {
+    const genderMap = { male: '男', female: '女', '1': '男', '2': '女' };
+    const taskStageMap = {
+      'receiving': '待领取',
+      'processing': '处理中',
+      'confirming': '待确认',
+      'finished': '已完结',
+    };
+
+    const toggleExpandedRow = (key, index, tar) => {
+      this.setState(state => {
+        let tkeys = state.tableExpandedRowKeys;
+        let opind = tkeys.indexOf(key);
+        if(opind === -1 && tar !== false) {
+          tkeys.push(key);
+        } else if(opind !== -1 && tar !== true) {
+          tkeys.splice(opind, 1);
+        }
+        return { tableExpandedRowKeys: tkeys };
+      });
+    };
+
     return (
       <>
-        
+        <PageHeader title="任务管理"></PageHeader>
+        <ExpandedDetailRow />
+        <Table
+          className="ds-ant-table-wrapper"
+          dataSource={this.state.tableData}
+          rowClassName="ds-table-row"
+          rowKey="task_id"
+          size="small"
+          pagination={{
+            current: this.state.currentPage,
+            pageSize: this.state.pageSize,
+            total: this.state.totalRecord,
+            onChange: this.paginationChangeHandler,
+            onShowSizeChange: this.paginationChangeHandler,
+            showQuickJumper: true,
+            showSizeChanger: true,
+          }}
+          loading={this.state.tableLoading}
+          expandedRowRender={record => <ExpandedDetailRow taskId={record.task_id} />}
+          expandIconAsCell={false}
+          expandIconColumnIndex={9}
+          expandedRowClassName={() => 'ds-table-expanded-row'}
+        >
+          {/**/}
+          <Column title="编号" dataIndex="num" align="right" width={60}/>
+          <Column title="姓名" dataIndex="name" />
+          <Column title="性别" dataIndex="gender" render={text => genderMap[text] || ''} />
+          <Column title="创建时间" dataIndex="created_time" />
+          <Column title="机构客户" dataIndex="org_name" />
+          <Column title="上传机构" dataIndex="org_belong" />
+          <Column title="操作员" dataIndex="operator_name" />
+          <Column title="测量部位" dataIndex="part" />
+          <Column title="任务状态" dataIndex="task_stage" render={text => taskStageMap[text] || ''} />
+          <Column title="操作" key="op" align="right" className=""
+            render={(text, record, index) => (
+              <>
+                {this.state.tableExpandedRowKeys.includes(record.task_id)
+                  ? <Button size="small"
+                    >
+                      收起
+                    </Button>
+                  : <Button size="small"
+                    >
+                      查看更多
+                    </Button>
+                }
+              </>  
+            )}
+          />
+        </Table>
       </>
-    );
+    ); // () => toggleExpandedRow(record.task_id, index, false)
   }
 
 }

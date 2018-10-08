@@ -114,7 +114,7 @@ class OrganizationList extends React.Component {
       pagination: {
         pageNumber: this.state.currentPage,
         pageSize: this.state.pageSize,
-      },      
+      },
     });
   }
 

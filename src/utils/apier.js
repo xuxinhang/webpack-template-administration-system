@@ -9,6 +9,8 @@ const usefulMockData = {
   failStat: { code: 400, frimsg: 'Some Errors Occured.' },
 };
 
+const taskStageList = ['receiving', 'processing', 'confirming', 'finished'];
+
 const filters = {
   login: {
     method: 'POST',
@@ -167,6 +169,75 @@ const filters = {
           reject({stat: usefulMockData.failStat});
         }
       }, 1230);
+    },
+  },
+  listTasks: {
+    method: 'GET',
+    url: '',
+    handler: (resolve, reject, name, input) => {
+      let mocked = Mock.mock({
+        data: {
+          pageInfo: usefulMockData.pageInfo,
+          [`list|${input.pagination.pageSize}`]: [{
+            'task_id|+1': 16,
+            'num|+1': 16,
+            'name': '@cname',
+            'gender|1': [2, 1],
+            'created_time': '@date',
+            'org_name': '@cname',
+            'operator_name': '@cname',
+            'org_belong': '法医中心',
+            'part': '腹部',
+            'task_stage|1': input.filters.task_stage == 'progressing'
+              ? ['processing', 'confirming']
+              : input.filters.task_stage,
+          }],
+        },
+        stat: usefulMockData.okStat,
+      });
+      setTimeout(() => resolve(mocked), 1230);
+    }
+  },
+  taskDetail: {
+    method: 'GET',
+    url: '',
+    handler: (resolve, reject, name, input) => {
+      let mocked = {
+        data: {
+          task_detail: Mock.mock({
+            'name': '@cname', 
+            'gender|1-2': 2,
+            'idcard': '@id',
+            'part': '春树里',
+            'method': '@word',
+            'time': '@date',
+            'description': '@cparagraph',
+            'age|10-88': 0,
+          }),
+          operator_detail: {
+            'name': '操作员姓名',
+            'tel': '125643234565',
+          },
+        },
+        stat: usefulMockData.okStat,
+      };
+      setTimeout(() => resolve(mocked), 1000);
+    },
+  },
+  // 领取任务
+  receiveTask: {
+    method: 'GET',
+    url: '',
+    handler: (resolve, reject, name, input) => {
+      if(input.taskId & 1) {
+        setTimeout(() => resolve({
+          status: usefulMockData.okStat,
+        }), 300);
+      } else {
+        setTimeout(() => reject({
+          status: usefulMockData.failStat,
+        }), 1000);
+      }
     },
   },
 };

@@ -1,0 +1,59 @@
+@import '~@/styles/vars.sass'
+
+.ds-step-bar
+  display: flex
+  align-items: flex-start
+
+.ds-step-bar_block
+  flex: 1
+  margin: 0 0.25em
+  &:last-child
+    .ds-step-bar_indicator::after
+      visibility: hidden
+
+.ds-step-bar_indicator
+  display: flex
+  align-items: center
+  margin-bottom: 0.8em
+  color: #000
+  & > span
+    content: ' '
+    display: block
+    height: 1.43em
+    width: 1.43em
+    line-height: 1.43em
+    border-radius: 99em
+    margin-right: 0.37em
+    text-align: center
+  &::after
+    content: ' '
+    display: block
+    flex: 1 1
+    height: 2px
+  & > span, &::after
+    background-color: $ds-theme-red
+
+.ds-step-bar_indicator--finished
+  & > span, &::before, &::after
+    color: #ffffff
+    background-color: $ds-theme-red
+.ds-step-bar_indicator--wait
+  & > span, &::before, &::after
+    background-color: $ds-text-gray-6
+  & > span, &::before
+    height: 1.01em
+    width: 1.01em
+    margin: 0.21em 0.58em 0.21em 0.21em
+.ds-step-bar_indicator--process
+  color: #ffffff
+  & > span, &::before, &::after
+    background-color: $ds-text-gray-5
+
+.ds-step-bar_title
+  margin-left: 0.2em
+  margin-bottom: 0.2em
+  color: $ds-text-gray-1
+
+.ds-step-bar_content
+  margin-left: 0.2em
+  color: $ds-text-gray-3
