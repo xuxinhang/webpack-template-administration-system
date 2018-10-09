@@ -21,18 +21,18 @@ class TaskManage extends React.Component {
       pageSize: 10,
       totalRecord: 10,
       // 数据
-      tableData: [{
-        'task_id': 16,
+      tableData: [/* {
+        'taskId': 16,
         'num': 16,
         'name': '@cname',
         'gender': 1,
-        'created_time': '@date',
-        'org_name': '@cname',
-        'operator_name': '@cname',
-        'org_belong': '法医中心',
+        'createdTime': '@date',
+        'orgName': '@cname',
+        'operatorName': '@cname',
+        'orgBelong': '法医中心',
         'part': '腹部',
-        'task_stage': 'receiving',
-      }],
+        'taskStage': 'receiving',
+      } */],
       tableExpandedRowKeys: [],
     };
 
@@ -51,7 +51,7 @@ class TaskManage extends React.Component {
     this.setState({ tableLoading: true });
     // 计算过滤器的取值 more in furture
     let filters = {
-      task_stage: this.state.taskListFilters.taskStage,
+      taskStage: this.state.taskListFilters.taskStage,
     };
 
     apier.fetch('listTasks', { pagination, filters })
@@ -61,8 +61,8 @@ class TaskManage extends React.Component {
         totalRecord: data.pageInfo.totalRecord,
       });
     })
-    .catch(({ status }) => {
-      Message.warn('获取数据时出现错误：' + status.frimsg);
+    .catch(({ stat }) => {
+      Message.warn('获取数据出错：' + stat.frimsg);
     })
     .finally(() => {
       this.setState({ tableLoading: false });
@@ -114,7 +114,7 @@ class TaskManage extends React.Component {
 
     const tableExpandedRowRender = (record, index, indent, expanded) => {
       return (
-        <ExpandedDetailRow active={expanded} taskId={record.task_id} />
+        <ExpandedDetailRow active={expanded} taskId={record.taskId} />
       );
     };
 
@@ -127,7 +127,7 @@ class TaskManage extends React.Component {
           styleName="table-task-list"
           dataSource={this.state.tableData}
           rowClassName="ds-table-row"
-          rowKey="task_id"
+          rowKey="taskId"
           size="small"
           pagination={{
             current: this.state.currentPage,
@@ -148,25 +148,25 @@ class TaskManage extends React.Component {
           <Column title="编号" dataIndex="num" align="right" width={60}/>
           <Column title="姓名" dataIndex="name" />
           <Column title="性别" dataIndex="gender" render={text => genderMap[text] || ''} />
-          <Column title="创建时间" dataIndex="created_time" />
-          <Column title="机构客户" dataIndex="org_name" />
-          <Column title="上传机构" dataIndex="org_belong" />
-          <Column title="操作员" dataIndex="operator_name" />
+          <Column title="创建时间" dataIndex="createdTime" />
+          <Column title="机构客户" dataIndex="orgName" />
+          <Column title="上传机构" dataIndex="orgBelong" />
+          <Column title="操作员" dataIndex="operatorName" />
           <Column title="测量部位" dataIndex="part" />
-          <Column title="任务状态" dataIndex="task_stage" render={text => taskStageMap[text] || ''} />
+          <Column title="任务状态" dataIndex="taskStage" render={text => taskStageMap[text] || ''} />
           <Column title="操作" key="op" align="right"
             render={(text, record, index) => (
               <>
-                {/*this.state.tableExpandedRowKeys.includes(record.task_id)
+                {/*this.state.tableExpandedRowKeys.includes(record.taskId)
                   ? <Button size="small"
-                      data-key={record.task_id}
+                      data-key={record.taskId}
                       data-index={index}
                       data-tar={false}
                     >
                       收起
                     </Button>
                   : <Button size="small"
-                      data-key={record.task_id}
+                      data-key={record.taskId}
                       data-index={index}
                       data-tar={true}
                     >
@@ -178,7 +178,7 @@ class TaskManage extends React.Component {
           />
         </Table>
       </>
-    ); // () => toggleExpandedRow(record.task_id, index, false)
+    ); // () => toggleExpandedRow(record.taskId, index, false)
   }
 
 }

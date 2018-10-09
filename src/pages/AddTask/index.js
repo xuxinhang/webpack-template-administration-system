@@ -168,19 +168,29 @@ class RawForm extends React.Component {
             </Form.Item>          
           </Col>
         </Row>
-        <div className="line-decorated-text" styleName="form-section-title">测量情况</div>  
+        <div className="line-decorated-text" styleName="form-section-title">附件上传</div>  
         <Row>
-          <Col span={36} styleName="form-row">
-            <Form.Item label="附件">
-              {getFieldDecorator('attachment', {
+          <Col span={9} styleName="form-row">
+            <Form.Item label="">
+              {getFieldDecorator('attachments', {
                 valuePropName: 'fileList',
-                getValueFromEvent: ({ file }) => [file],
+                getValueFromEvent: ({ file }) => {
+                  if(file.size > 10 * 1024 * 1024) {
+                    Modal.warning({
+                      title: '选择的文件不符合要求',
+                      content: '文件体积要小于10MB',
+                    });
+                    return [];
+                  }
+                  return [file];
+                },
                 initialValue: [],
               })(
                 <Upload.Dragger
                   name="task_upload"
+                  styleName="form-upload-box"
                   listType="picture"
-                  showUploadList={true}
+                  showUploadList={false}
                   beforeUpload={() => false}
                 >
                   {((value) => (
@@ -196,7 +206,7 @@ class RawForm extends React.Component {
                     <p className="ant-upload-hint">
                       请上传包括STL文件、照片和描述文件的压缩包
                     </p>
-                  </>))(getFieldValue('attachment'))}
+                  </>))(getFieldValue('attachments'))}
                 </Upload.Dragger>
               )}
             </Form.Item>          

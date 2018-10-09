@@ -173,9 +173,9 @@ class RawForm extends React.Component {
         </Row>
         <Form.Item styleName="form-submit-bar">
           {[
-          <Button {...submitBtnProps} htmlType="submit">提交</Button>,
-          <Button {...submitBtnProps} disabled loading >正在处理</Button>,
-          <Button {...submitBtnProps} disabled>添加成功</Button>,
+          <Button {...submitBtnProps} key="submit" htmlType="submit">提交</Button>,
+          <Button {...submitBtnProps} key="submit" disabled loading >正在处理</Button>,
+          <Button {...submitBtnProps} key="submit" disabled>添加成功</Button>,
           ][this.props.submitStage]}
         </Form.Item>
       </Form>

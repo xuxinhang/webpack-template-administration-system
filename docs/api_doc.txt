@@ -44,6 +44,14 @@ HOST: http://admin.body-scan.org/
 + 状态码表 (后台来写)
     ```
     ```
++ 关于任务状态的声明
+    receiving  - 待领取
+    processing - 处理中 - \ 合称 跟进中 - progressing
+    confirming - 待确认 - /
+    finished   - 已完结
+
+    progressing 目前只在获取任务列表时使用
+
 
 ## Data Structures
 
@@ -188,6 +196,7 @@ HOST: http://admin.body-scan.org/
                 + belong: 法医中心 (string) - 所属机构名称
                 + email: bob@ww.cc (string)
                 + taskNumber: 124 (number) - 任务数
+                + frozen: 1 (number) - 是否已经修改
 
 ## 冻结/解冻机构号 [/organization/freeze]
 ### freezeorgs [POST]
@@ -212,7 +221,7 @@ HOST: http://admin.body-scan.org/
         + method: 瞎蒙法 (string) - 测量方法
         + time: 2018/09/01 (string) - 测量时间
         + description: 明显没问题 (string) - 测量情况概述
-        + attachment - 二进制任务附件文件
+        + attachments - 二进制任务附件文件
 + Response 200 (application/json)
     + Attributes
         + status(Status)
@@ -225,6 +234,7 @@ HOST: http://admin.body-scan.org/
 + Request (application/json)
     + Attributes
         + pagination (pagination)
+        + query_stage: confirming (string) - 要查询的任务阶段 
 + Response 200 (application/json)
     + Attributes
         + pageInfo(pageinfo) - 记录了关于页的一些信息
@@ -232,6 +242,7 @@ HOST: http://admin.body-scan.org/
         + data(array)
             + (object)
                 + task_id: 78 (number) - 任务ID
+                + num: 23 (number) - 编号
                 + name: 相对肝 (string) - 检测对象
                 + gender: male (string)
                 + created_time: 2018/10/03 (string) - 条目创建时间
@@ -239,7 +250,7 @@ HOST: http://admin.body-scan.org/
                 + org_name: 仁人君 (string) - 机构客户姓名
                 + org_belong: 法医中心 (string) - 机构客户所属机构
                 + part: 腹部 (string) - 测量部位
-                + stage(enum) - 任务处理阶段
+                + task_stage(enum) - 任务处理阶段
                     + receiving(string)
                     + processing(string)
                     + confirming(string)
@@ -264,14 +275,15 @@ HOST: http://admin.body-scan.org/
         + operator_detail(object) - 把"添加操作员"里上传的返回来就好了
             + name: 操作员姓名 (string)
             + tel: 操作员电话 (string)
-        + stage(enum) - 任务阶段
+        + organization_detail(object)
+        + task_stage(enum) - 任务阶段
             + receiving(string)
             + processing(string)
             + confirming(string)
             + finished(string)
         + task_attachment_is_downloaded: true (boolean) - 操作员是否已下载附件
         + task_attachment_url: https://body-scan.com/path/to/atta (string) - 机构号新建任务时上传的附件
-        + task_report_url: https://body-scan.com/path/to/report (string) - 由操作员上传的报告文件(没有报告文件就留空)
+        + task_report_url: https://body-scan.com/path/to/report (string) - 由操作员上传的报告文件(没有报告文件就留空字符串)
         + can_operator_confirm: false (boolean) - 操作员是否可以进行确认操作了
 
 ## 任务操作:操作员领取 [/tasks/operate/{task_id}?action=receive]
@@ -293,7 +305,8 @@ HOST: http://admin.body-scan.org/
         + task_id: 78 (number) - 任务ID
         + report_file - 二进制报告文件
 + Response 200 (application/json)
-    + Attributes(VaccantResp)
+    + Attributes
+        + task_report_url (string) - 上传的报告文件
 
 ## 任务操作:操作员或机构号进行确认 [/tasks/operate/{task_id}?action=confirm]
 ### task confirm [GET]
@@ -302,7 +315,6 @@ HOST: http://admin.body-scan.org/
     + task_id: 78 (number) - 任务ID
 + Response 200 (application/json)
     + Attributes
-        + task_report_url (string) - 上传的报告文件
     
 
 // TODO

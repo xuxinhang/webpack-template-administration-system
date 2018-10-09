@@ -19,7 +19,7 @@ class ExpandedDetailRow extends React.Component {
     this.state = {
       // 数据
       detailData: {
-        task_detail:{
+        taskDetail:{
           'taskId': props.taskId || '12',
           'name': '@cname', 
           'gender': 2,
@@ -30,15 +30,15 @@ class ExpandedDetailRow extends React.Component {
           'description': '@cparagraph',
           'age': 130,
         },
-        operator_detail: {
+        operatorDetail: {
           'name': '操作员姓名',
           'tel': '125643234565',
         },
-        org_detail: {
+        orgDetail: {
           name: 'ORG',
           tel: 'ORG123456',
         },
-        task_stage: 'receiving',
+        taskStage: 'receiving',
         task_attachment_is_downloaded: false,
         task_attachment_url: 'https://baidu.com',
         task_report_url: 'https://weibo.com',
@@ -53,14 +53,14 @@ class ExpandedDetailRow extends React.Component {
 
   componentDidMount() {
     this.fetchDetailData({
-      taskId: this.state.detailData.task_detail.taskId,
+      taskId: this.state.detailData.taskDetail.taskId,
     });
   }
 
   componentDidUpdate(prevProps, prevState) {
     // console.log(prevProps, this.props);
     // let prevTaskId = prevProps.taskId;
-    let prevTaskIdInState = prevState.detailData.task_detail.taskId;
+    let prevTaskIdInState = prevState.detailData.taskDetail.taskId;
     let newTaskId = this.props.taskId;
     if(prevTaskIdInState != newTaskId && this.props.active) {
       this.fetchDetailData({ taskId: newTaskId });
@@ -70,32 +70,32 @@ class ExpandedDetailRow extends React.Component {
   async fetchDetailData({ taskId }) {
     this.setState({ dataLoading: true });
     try {
-      let { data, status } = await apier.fetch('taskDetail', { taskId });
+      let { data } = await apier.fetch('taskDetail', { taskId });
       this.setState({ detailData: data });
-    } catch({ data, status }) {
-      Message.error('获取任务详情错误：' + status.frimsg);
+    } catch({ data, stat }) {
+      Message.error('获取任务详情错误：' + stat.frimsg);
     } finally {
       this.setState({ dataLoading: false });
     }
   }
 
   receiveTaskBtnClickHandler() {
-    let { task_detail: { taskId } } = this.state.detailData;
+    let { taskDetail: { taskId } } = this.state.detailData;
     Modal.confirm({
       title: '确实要领取此任务吗？',
-      onOk: () => {
+      onOk: close => {
         return apier.fetch('receiveTask', { taskId })
-        .then(({ data, status }) => {
+        .then(() => {
           Message.success('此任务已被你领取');
           this.setState(prevState => {
-            prevState.detailData.task_stage = 'processing';
+            prevState.detailData.taskStage = 'processing';
             return { detailData: prevState.detailData };
           });
         })
-        .catch(({ data, status }) => {
-          Modal.warn({
+        .catch(({ stat }) => {
+          Modal.error({
             title: '无法领取此任务',
-            content: status.frimsg,
+            content: stat.frimsg,
           });
         });
       },
@@ -113,7 +113,7 @@ class ExpandedDetailRow extends React.Component {
         finished: 'receiving',
       };
       this.setState(state => {
-        state.detailData.task_stage = mp[state.detailData.task_stage];
+        state.detailData.taskStage = mp[state.detailData.taskStage];
         return { detailData: state.detailData };
       });
     };
@@ -134,7 +134,17 @@ class ExpandedDetailRow extends React.Component {
           uploadBtnFileList: fileList.length <= 1 ? fileList : [file],
         });
       },
-      beforeUpload: () => {
+      beforeUpload: file => {
+        // [TODO] 文件过滤规则
+        if(file.size > 50 * 1024 * 1024) {
+          Modal.info({
+            title: '选择的文件不符合规范',
+            content: '文件大小不应超过50MB',
+          });
+          this.setState({ uploadBtnFileList: [] });
+          return false;
+        }
+
         if(this.state.detailData.task_report_url) {
           return new Promise((resolve, reject) => {
             Modal.confirm({
@@ -174,12 +184,12 @@ class ExpandedDetailRow extends React.Component {
               ...prevState.detailData,
               task_report_url: data.taskReportUrl,
               can_operator_confirm: data.canOperatorConfirm || false,
-              task_stage: 'confirming',
+              taskStage: 'confirming',
             },
             uploadBtnLoading: false,
           }));
           onSuccess();
-        } catch({ status }) {
+        } catch({ stat }) {
           onError();
           this.setState({ uploadBtnLoading: false });
         }
@@ -193,16 +203,17 @@ class ExpandedDetailRow extends React.Component {
         onOk: async close => {
           try {
             await apier.fetch('confirmTask', {
-              taskId: this.state.detailData.task_detail.taskId,
+              taskId: this.state.detailData.taskDetail.taskId,
             });
             this.setState(prevState => ({
-              detailData: { ...prevState.detailData, task_stage: 'finished' },
+              detailData: { ...prevState.detailData, taskStage: 'finished' },
             }));
             close();
-          } catch({ status }) {
+          } catch({ stat }) {
+            close();
             Modal.error({
               title: '暂时无法确认此任务',
-              content: status.frimsg,
+              content: stat.frimsg,
             });
           }
         },
@@ -219,19 +230,19 @@ class ExpandedDetailRow extends React.Component {
                 <tbody>
                   <tr>
                     <th>姓名</th>
-                    <td>{detailData.task_detail.name}</td>
+                    <td>{detailData.taskDetail.name}</td>
                   </tr>
                   <tr>
                     <th>性别 / 年龄</th>
                     <td>
-                      {['','男','女'][detailData.task_detail.gender]}
+                      {['','男','女'][detailData.taskDetail.gender]}
                       &nbsp;/&nbsp; 
-                      {detailData.task_detail.age}
+                      {detailData.taskDetail.age}
                     </td>
                   </tr>
                   <tr>
                     <th>证件号</th>
-                    <td>{detailData.task_detail.idcard}</td>
+                    <td>{detailData.taskDetail.idcard}</td>
                   </tr>
                 </tbody>
               </table>
@@ -242,29 +253,29 @@ class ExpandedDetailRow extends React.Component {
                 <tbody>
                   <tr>
                     <th>测量部位</th>
-                    <td>{detailData.task_detail.part}</td>
+                    <td>{detailData.taskDetail.part}</td>
                   </tr>
                   <tr>
                     <th>测量方法</th>
-                    <td>{detailData.task_detail.method}</td>
+                    <td>{detailData.taskDetail.method}</td>
                   </tr>
                   <tr>
                     <th>测量时间</th>
-                    <td>{detailData.task_detail.time}</td>
+                    <td>{detailData.taskDetail.time}</td>
                   </tr>
                 </tbody>
               </table>
             </Col>
             <Col span={10}>
               <p styleName="section_title">基本概述</p>
-              <p styleName="section_para">{detailData.task_detail.description}</p>
+              <p styleName="section_para">{detailData.taskDetail.description}</p>
             </Col>
           </Row>
           <div styleName="section-wrap">
             <p styleName="section_title">处理进度</p>
             <UserCtx.Consumer>
             {info => {
-              let currentStepIndex = computeCurrentStepIndex(this.state.detailData.task_stage);
+              let currentStepIndex = computeCurrentStepIndex(this.state.detailData.taskStage);
               return (
               <DsSteps
                 styleName="step-bar-wrap"
@@ -299,7 +310,7 @@ class ExpandedDetailRow extends React.Component {
                       : '⚠操作员尚未下载附件'}
                       <a
                         target="_blank"
-                        download={'task_' + this.state.detailData.task_detail.taskId + '_attchment'}
+                        download={'task_' + this.state.detailData.taskDetail.taskId + '_attchment'}
                         href={this.state.detailData.task_attachment_url}>
                         &nbsp;
                         <Icon type="download"></Icon>
@@ -312,7 +323,7 @@ class ExpandedDetailRow extends React.Component {
                       <>
                         <Upload
                           {...uploadBtnProps}
-                          data={{ taskId: this.state.detailData.task_detail.taskId }}
+                          data={{ taskId: this.state.detailData.taskDetail.taskId }}
                           disabled={this.state.uploadBtnLoading}
                           showUploadList={false}
                         > 
@@ -329,14 +340,14 @@ class ExpandedDetailRow extends React.Component {
                       <Popover content={
                         <>
                           操作员：
-                          {this.state.detailData.operator_detail.name}
+                          {this.state.detailData.operatorDetail.name}
                           <br />
-                          {this.state.detailData.operator_detail.tel}
+                          {this.state.detailData.operatorDetail.tel}
                           <br />
                           机构客户：
-                          {this.state.detailData.org_detail.name}
+                          {this.state.detailData.orgDetail.name}
                           <br />
-                          {this.state.detailData.org_detail.tel}
+                          {this.state.detailData.orgDetail.tel}
                         </>
                       }>
                         <a>联系方式</a>
@@ -348,7 +359,7 @@ class ExpandedDetailRow extends React.Component {
                   {this.state.detailData.task_report_url &&
                   <a
                     target="_blank"
-                    download={'task_' + this.state.detailData.task_detail.taskId + '_report'}
+                    download={'task_' + this.state.detailData.taskDetail.taskId + '_report'}
                     href={this.state.detailData.task_report_url}>
                     点击下载报告
                   </a>}
@@ -365,7 +376,7 @@ class ExpandedDetailRow extends React.Component {
                 </DsSteps.DsStep>
                 <DsSteps.DsStep title="已完结" />
               </DsSteps>
-            )}}
+            );}}
             </UserCtx.Consumer>
           </div>
         </div>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Table, Input, Button, Modal, Message } from 'antd';
+import { Table, Button, Message } from 'antd';
 const { Column } = Table;
 import { PageHeader } from '@/comps/PageHeader';
 import { StatusModal } from '@/comps/StatusModal';
@@ -16,13 +16,13 @@ class OperatorList extends React.Component {
       formState: 0,
       formTip: ['', ''],
       listData: [{
-        'operator_id': 16,
+        'operatorId': 16,
         'num': 16,
-        'name': '@cname',
-        'created_time': '@date',
+        'name': '<script>@cname&gt;</script>',
+        'createdTime': '@date',
         'tel': '13853321909',
         'password': '@word',
-        'task_statistics': {
+        'taskStatistics': {
           'received': 0,
           'processing': 0,
           'confirming': 0,
@@ -48,26 +48,26 @@ class OperatorList extends React.Component {
     this.setState({ tableLoading: true });
     // Launch network request
     apier.fetch('listOperators', fedData)
-    .then(({data, stat}) => {
+    .then(({data}) => {
       this.setState({
         listData: data.list,
         totalRecord: data.pageInfo.totalRecord,
       });
     })
-    .catch(({data, stat}) => {
+    .catch(({stat}) => {
       Message.warning(<>发生错误:<br />{stat.frimsg}</>);
     })
     .finally(() => {
       this.setState({ tableLoading: false });
-    })
+    });
   }
 
   freezeBtnClickHandler(e) {
     let updateState = newState => this.setState({ freezeModalProps: newState });
     let { recordId, recordName, action, rowIndex } = e.target.dataset;
     let commonProps = {
-      title: `你是要将操作员“${recordName}”${[,'解冻','冻结'][action]}吗?`,
-      children: [,'账号将可正常使用','他将无法登录系统并进行操作'][action],
+      title: `你是要将操作员“${recordName}”${['','解冻','冻结'][action]}吗?`,
+      children: ['','账号将可正常使用','他将无法登录系统并进行操作'][action],
       visible: true,
       closable: false,
     };
@@ -90,7 +90,7 @@ class OperatorList extends React.Component {
       });
       // network request
       apier.fetch('freezeOperator', {
-        operator_id: recordId,
+        operatorId: recordId,
         action: action, // 2 = 冻结
       })
       .then(() => {
@@ -109,7 +109,7 @@ class OperatorList extends React.Component {
           onCancel: freezeModalClose,
         });
       });
-    }
+    };
 
     freezeModalInit();
   }
@@ -125,9 +125,9 @@ class OperatorList extends React.Component {
 
   render() {
     const taskStatisticsColumnRender = (text, record) => {
-      let val = record.task_statistics;
+      let val = record.taskStatistics;
       return `${val.received} / ${val.processing} / ${val.confirming} / ${val.finished}`;
-    }
+    };
 
     /* const freezeBtnClickHandler = e => {
       let el = e.target;
@@ -144,7 +144,7 @@ class OperatorList extends React.Component {
             okButtonProps: { loading:  true },
           });
           apier.fetch('freezeOperator', {
-            operator_id: el.dataset.recordId,
+            operatorId: el.dataset.recordId,
             action: 2, // = 冻结
           })
           .then(() => close())
@@ -167,7 +167,7 @@ class OperatorList extends React.Component {
       this.fetchListData({
         pagination: { pageNumber: currentPage, pageSize },
       });
-    }
+    };
 
     const paginationProps = {
       current: this.state.currentPage,
@@ -177,14 +177,14 @@ class OperatorList extends React.Component {
       total: this.state.totalRecord,
       onChange: onPaginationChange,
       onShowSizeChange: onPaginationChange,
-    }
+    };
 
     return (
       <>
         <PageHeader title="新建操作员账号">
           <Link to="/admin/addOperator">
             <Button className="button--deep-gray-primary" size="small" type="primary">
-              新建操作员账号
+              操作员账号管理
             </Button>
           </Link>
         </PageHeader>
@@ -192,14 +192,14 @@ class OperatorList extends React.Component {
           styleName="ds-ant-table-wrapper"
           dataSource={this.state.listData}
           rowClassName="ds-table-row"
-          rowKey="operator_id"
+          rowKey="operatorId"
           size="small"
           pagination={paginationProps}
           loading={this.state.tableLoading}
         >
           <Column title="编号" dataIndex="num" align="right" width={60}/>
           <Column title="姓名" dataIndex="name" />
-          <Column title="创建时间" dataIndex="created_time" />
+          <Column title="创建时间" dataIndex="createdTime" />
           <Column title="账号" dataIndex="tel" />
           <Column title="密码" dataIndex="password" />
           <Column
@@ -213,14 +213,15 @@ class OperatorList extends React.Component {
               <>
                 <Button
                   size="small" ghost
-                  type={[,'danger','primary'][record.frozen]}
-                  data-record-id={record.operator_id}
+                  type={['','danger','primary'][record.frozen]}
+                  data-record-id={record.operatorId}
                   data-record-name={record.name}
-                  data-action={[,2,1][record.frozen]}
+                  data-action={[0,2,1][record.frozen]}
                   data-row-index={index}
                   onClick={this.freezeBtnClickHandler}
-                  children={[,'冻结账号', '解冻账号'][record.frozen]}
-                />
+                >
+                  {['','冻结账号', '解冻账号'][record.frozen]}
+                </Button>
               </>  
             )}
           />

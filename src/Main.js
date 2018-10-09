@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router';
 import { Router, Route, HashRouter, Redirect, Switch } from 'react-router-dom';
-import zh_CN from 'antd/lib/locale-provider/zh_CN'
+import { storeLoginInfo, retrieveLoginInfo, defaultLoginInfo } from '@/utils/loginInfoStorage.js';
+import zh_CN from 'antd/lib/locale-provider/zh_CN';
 import { LocaleProvider } from 'antd';
 import Login from './pages/Login';
 import Admin from './pages/Admin';
@@ -11,16 +12,10 @@ import './styles/common.sass';
 
 import { UserCtx } from './contexts/contexts.js';
 
-const defaultLoginInfo = {
-  username: '',
-  token: false,
-  ident: false, 
-};
-
 // withRouter 
 // 注意：withRouter 放在 render 之外否则每次渲染的都是不同的component
 const withRouterAdmin = withRouter(Admin);
-const withRouterLogin = withRouter(Login)
+const withRouterLogin = withRouter(Login);
 
 class Main extends Component {
   constructor(props) {
@@ -34,14 +29,9 @@ class Main extends Component {
       });
     };
 
-    this.retrieveLoginInfo = () => {
-      let stored = sessionStorage.getItem('userLoginInfo');
-      return stored ? JSON.parse(stored) : {};
-    };
-    this.storeLoginInfo = (val) => {
-      sessionStorage.setItem('userLoginInfo', JSON.stringify(val));
-    };
-
+    this.retrieveLoginInfo = retrieveLoginInfo;
+    this.storeLoginInfo = storeLoginInfo;
+    
     // [NOTE] 需要在渲染<Route>之前读入登录状态
     //        否则刷新之后URL会因为Route未渲染而丢失
     this.state = {
