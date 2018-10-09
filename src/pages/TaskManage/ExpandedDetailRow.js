@@ -1,6 +1,6 @@
 import React from 'react';
-import { Steps, Row, Col, Button, Icon, Popover, Modal, Message } from 'antd';
-import DsSteps, { DsStep } from '@/comps/DsSteps';
+import { Row, Col, Button, Icon, Popover, Modal, Message, Spin, Upload } from 'antd';
+import DsSteps from '@/comps/DsSteps';
 import { UserCtx } from '@/contexts/contexts.js';
 import apier from '@/utils/apier.js';
 
@@ -45,23 +45,38 @@ class ExpandedDetailRow extends React.Component {
         can_operator_confirm: false,
       },
       // UI
-
+      dataLoading: false,
+      uploadBtnFileList: [],
+      uploadBtnLoading: false,
     };
   }
 
   componentDidMount() {
-    // this.fetchDetailData({
-    //   taskId: this.state.detailData.task_detail.taskId,
-    // });
+    this.fetchDetailData({
+      taskId: this.state.detailData.task_detail.taskId,
+    });
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    // console.log(prevProps, this.props);
+    // let prevTaskId = prevProps.taskId;
+    let prevTaskIdInState = prevState.detailData.task_detail.taskId;
+    let newTaskId = this.props.taskId;
+    if(prevTaskIdInState != newTaskId && this.props.active) {
+      this.fetchDetailData({ taskId: newTaskId });
+    }
   }
 
   async fetchDetailData({ taskId }) {
-    // try {
+    this.setState({ dataLoading: true });
+    try {
       let { data, status } = await apier.fetch('taskDetail', { taskId });
       this.setState({ detailData: data });
-    // } catch({ data, status }) {
-      // Message.error('获取任务详情错误：' + status.frimsg);
-    // }
+    } catch({ data, status }) {
+      Message.error('获取任务详情错误：' + status.frimsg);
+    } finally {
+      this.setState({ dataLoading: false });
+    }
   }
 
   receiveTaskBtnClickHandler() {
@@ -113,134 +128,248 @@ class ExpandedDetailRow extends React.Component {
       return  arrayFind === undefined ? 0 : arrayFind;
     };
 
+    const uploadBtnProps = {
+      onChange: ({ file, fileList }) => {
+        this.setState({
+          uploadBtnFileList: fileList.length <= 1 ? fileList : [file],
+        });
+      },
+      beforeUpload: () => {
+        if(this.state.detailData.task_report_url) {
+          return new Promise((resolve, reject) => {
+            Modal.confirm({
+              title: '之前上传的文件会被覆盖',
+              content: '确定继续上传吗？',
+              okText: '继续上传',
+              onOk: close => {
+                close();
+                resolve();
+              },
+              onCancel: close => {
+                reject();
+                close();
+              },
+            });
+          });
+        } else {
+          return true;
+        }
+      },
+      customRequest: async ({ onProgress, onError, onSuccess, data: uploadData, file }) => {
+        onProgress();
+        this.setState({ uploadBtnLoading: true });
+        // File Object
+        let fd = new FormData();
+        fd.append('task_report_raw_file_type', file.type);
+        fd.append('task_report_raw_file_name', file.name);
+        fd.append('task_report_file', file);
+        // Request
+        try {
+          let { data } = await apier.fetch('uploadTaskReport', {
+            ...uploadData,
+            formdata: fd,
+          });
+          this.setState(prevState => ({
+            detailData: {
+              ...prevState.detailData,
+              task_report_url: data.taskReportUrl,
+              can_operator_confirm: data.canOperatorConfirm || false,
+              task_stage: 'confirming',
+            },
+            uploadBtnLoading: false,
+          }));
+          onSuccess();
+        } catch({ status }) {
+          onError();
+          this.setState({ uploadBtnLoading: false });
+        }
+      },
+    };
+
+    const confirmBtnClickHandler = e => {
+      Modal.confirm({
+        title: '确实要确认此任务吗？',
+        content: '',
+        onOk: async close => {
+          try {
+            await apier.fetch('confirmTask', {
+              taskId: this.state.detailData.task_detail.taskId,
+            });
+            this.setState(prevState => ({
+              detailData: { ...prevState.detailData, task_stage: 'finished' },
+            }));
+            close();
+          } catch({ status }) {
+            Modal.error({
+              title: '暂时无法确认此任务',
+              content: status.frimsg,
+            });
+          }
+        },
+      });
+    };
+
     return (
-      <div styleName="box-wrap">
-        <Row gutter={12} styleName="section-wrap">
-          <Col span={7}>
-            <p styleName="section_title" onClick={toggleStage}>基本信息{this.props.taskId}</p>
-            <table styleName="section_table">
-              <tr>
-                <th>姓名</th>
-                <td>{detailData.task_detail.name}</td>
-              </tr>
-              <tr>
-                <th>性别 / 年龄</th>
-                <td>
-                  {['','男','女'][detailData.task_detail.gender]}
-                  &nbsp;/&nbsp; 
-                  {detailData.task_detail.age}
-                </td>
-              </tr>
-              <tr>
-                <th>证件号</th>
-                <td>{detailData.task_detail.idcard}</td>
-              </tr>
-            </table>
-          </Col>
-          <Col span={7}>
-            <p styleName="section_title">测量情况</p>
-            <table styleName="section_table">
-              <tr>
-                <th>测量部位</th>
-                <td>{detailData.task_detail.part}</td>
-              </tr>
-              <tr>
-                <th>测量方法</th>
-                <td>{detailData.task_detail.method}</td>
-              </tr>
-              <tr>
-                <th>测量时间</th>
-                <td>{detailData.task_detail.time}</td>
-              </tr>
-            </table>
-          </Col>
-          <Col span={10}>
-            <p styleName="section_title">基本概述</p>
-            <p styleName="section_para">{detailData.task_detail.description}</p>
-          </Col>
-        </Row>
-        <div styleName="section-wrap">
-          <p styleName="section_title">处理进度</p>
-          <UserCtx.Consumer>
-          {info => {
-            let currentStepIndex = computeCurrentStepIndex(this.state.detailData.task_stage);
-            return (
-            <DsSteps
-              styleName="step-bar-wrap"
-              current={currentStepIndex}
-              icons={{
-                finished: <Icon type="check" theme="outlined" />,
-                process: <Icon component={() => customedIcon.clock} />,
-                wait: '',
-              }}
-            >
-              <DsSteps.DsStep title="上传任务附件">上传成功</DsSteps.DsStep>
-              <DsSteps.DsStep title="待领取">
-              {currentStepIndex > 2
-              ? '操作员已领取'
-              : <>
-                  此任务尚未领取 <br />
-                  { info.ident == 'operator' && 
-                  <Button size="small" onClick={this.receiveTaskBtnClickHandler}>
-                    领取任务
-                  </Button>}
-                </>}
-              </DsSteps.DsStep>
-              <DsSteps.DsStep title="处理中">
-              {currentStepIndex < 3
-                ? '未开始'
+      <Spin spinning={this.state.dataLoading}>
+        <div styleName="box-wrap">
+          <Row gutter={12} styleName="section-wrap">
+            <Col span={7}>
+              <p styleName="section_title">基本信息{this.props.taskId}</p>
+              <table styleName="section_table">
+                <tbody>
+                  <tr>
+                    <th>姓名</th>
+                    <td>{detailData.task_detail.name}</td>
+                  </tr>
+                  <tr>
+                    <th>性别 / 年龄</th>
+                    <td>
+                      {['','男','女'][detailData.task_detail.gender]}
+                      &nbsp;/&nbsp; 
+                      {detailData.task_detail.age}
+                    </td>
+                  </tr>
+                  <tr>
+                    <th>证件号</th>
+                    <td>{detailData.task_detail.idcard}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </Col>
+            <Col span={7}>
+              <p styleName="section_title">测量情况</p>
+              <table styleName="section_table">
+                <tbody>
+                  <tr>
+                    <th>测量部位</th>
+                    <td>{detailData.task_detail.part}</td>
+                  </tr>
+                  <tr>
+                    <th>测量方法</th>
+                    <td>{detailData.task_detail.method}</td>
+                  </tr>
+                  <tr>
+                    <th>测量时间</th>
+                    <td>{detailData.task_detail.time}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </Col>
+            <Col span={10}>
+              <p styleName="section_title">基本概述</p>
+              <p styleName="section_para">{detailData.task_detail.description}</p>
+            </Col>
+          </Row>
+          <div styleName="section-wrap">
+            <p styleName="section_title">处理进度</p>
+            <UserCtx.Consumer>
+            {info => {
+              let currentStepIndex = computeCurrentStepIndex(this.state.detailData.task_stage);
+              return (
+              <DsSteps
+                styleName="step-bar-wrap"
+                current={currentStepIndex}
+                icons={{
+                  finished: <Icon type="check" theme="outlined" />,
+                  process: <Icon component={() => customedIcon.clock} />,
+                  wait: '',
+                }}
+              >
+                <DsSteps.DsStep title="上传任务附件">
+                  上传成功
+                  <span styleName="toggle-stage-btn" onDoubleClick={toggleStage}>😂</span>
+                </DsSteps.DsStep>
+                <DsSteps.DsStep title="待领取">
+                {currentStepIndex > 2
+                ? '操作员已领取'
                 : <>
-                    {this.state.detailData.task_attachment_is_downloaded
-                    ? '操作员已下载附件'
-                    : '操作员尚未下载附件'}
-                    <a>
-                      &nbsp;<Icon type="download"></Icon>
-                    </a>
-                    <br />
-                    {this.state.detailData.task_report_url
-                    ? '操作员已上传报告'
-                    : '操作员尚未上传报告'}
-                    {info.ident == 'operator' && currentStepIndex < 5 &&
-                    <a> 
-                      &nbsp;<Icon type="upload"></Icon>
-                    </a>}
-                    <br />
-                    <Popover content={
+                    ⚠此任务尚未领取 <br />
+                    { info.ident == 'operator' && 
+                    <Button size="small" onClick={this.receiveTaskBtnClickHandler}>
+                      领取任务
+                    </Button>}
+                  </>}
+                </DsSteps.DsStep>
+                <DsSteps.DsStep title="处理中">
+                {currentStepIndex < 3
+                  ? '未开始'
+                  : <>
+                      {this.state.detailData.task_attachment_is_downloaded
+                      ? '✔操作员已下载附件'
+                      : '⚠操作员尚未下载附件'}
+                      <a
+                        target="_blank"
+                        download={'task_' + this.state.detailData.task_detail.taskId + '_attchment'}
+                        href={this.state.detailData.task_attachment_url}>
+                        &nbsp;
+                        <Icon type="download"></Icon>
+                      </a>
+                      <br />
+                      {this.state.detailData.task_report_url
+                      ? '✔操作员已上传报告'
+                      : '⚠操作员尚未上传报告'}
+                      {info.ident == 'operator' && currentStepIndex < 5 &&
                       <>
-                        操作员：
-                        {this.state.detailData.operator_detail.name}
-                        {this.state.detailData.operator_detail.tel}
-                        <br />
-                        机构客户：
-                        {this.state.detailData.org_detail.name}
-                        {this.state.detailData.org_detail.tel}
+                        <Upload
+                          {...uploadBtnProps}
+                          data={{ taskId: this.state.detailData.task_detail.taskId }}
+                          disabled={this.state.uploadBtnLoading}
+                          showUploadList={false}
+                        > 
+                          <a>&nbsp;<Icon type="upload"></Icon></a>
+                        </Upload>
+                        <Upload
+                          styleName="upload-file-list"
+                          fileList={this.state.uploadBtnFileList}
+                          showUploadList={{ showRemoveIcon: false }}
+                        />
                       </>
-                    }>
-                      <a>联系方式</a>
-                    </Popover>
-                  </>
-              }
-              </DsSteps.DsStep>
-              <DsSteps.DsStep title="待确认">
-                {this.state.detailData.task_report_url &&
-                <a>点击下载报告</a>}
-                <br />
-                {currentStepIndex > 4
-                ? '此任务已被确认'
-                : currentStepIndex == 4
-                ? <>
-                  {((info.ident == 'operator' && this.state.detailData.can_operator_confirm)
-                  || info.ident == 'organization' || info.ident == 'administrator') &&
-                    <Button size="small">点击确认</Button>}
-                  </>
-                : '' }
-              </DsSteps.DsStep>
-              <DsSteps.DsStep title="已完结" />
-            </DsSteps>
-          )}}
-          </UserCtx.Consumer>
+                      }
+                      <br />
+                      <Popover content={
+                        <>
+                          操作员：
+                          {this.state.detailData.operator_detail.name}
+                          <br />
+                          {this.state.detailData.operator_detail.tel}
+                          <br />
+                          机构客户：
+                          {this.state.detailData.org_detail.name}
+                          <br />
+                          {this.state.detailData.org_detail.tel}
+                        </>
+                      }>
+                        <a>联系方式</a>
+                      </Popover>
+                    </>
+                }
+                </DsSteps.DsStep>
+                <DsSteps.DsStep title="待确认">
+                  {this.state.detailData.task_report_url &&
+                  <a
+                    target="_blank"
+                    download={'task_' + this.state.detailData.task_detail.taskId + '_report'}
+                    href={this.state.detailData.task_report_url}>
+                    点击下载报告
+                  </a>}
+                  <br />
+                  {currentStepIndex > 4
+                  ? '此任务已被确认'
+                  : currentStepIndex == 4
+                  ? <>
+                    {((info.ident == 'operator' && this.state.detailData.can_operator_confirm)
+                    || info.ident == 'organization' || info.ident == 'administrator') &&
+                      <Button size="small" onClick={confirmBtnClickHandler}>点击确认</Button>}
+                    </>
+                  : '' }
+                </DsSteps.DsStep>
+                <DsSteps.DsStep title="已完结" />
+              </DsSteps>
+            )}}
+            </UserCtx.Consumer>
+          </div>
         </div>
-      </div>
+      </Spin>
     );
   }
 }

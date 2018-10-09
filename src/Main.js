@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router';
 import { Router, Route, HashRouter, Redirect, Switch } from 'react-router-dom';
+import zh_CN from 'antd/lib/locale-provider/zh_CN'
+import { LocaleProvider } from 'antd';
 import Login from './pages/Login';
 import Admin from './pages/Admin';
 
@@ -14,6 +16,11 @@ const defaultLoginInfo = {
   token: false,
   ident: false, 
 };
+
+// withRouter 
+// 注意：withRouter 放在 render 之外否则每次渲染的都是不同的component
+const withRouterAdmin = withRouter(Admin);
+const withRouterLogin = withRouter(Login)
 
 class Main extends Component {
   constructor(props) {
@@ -56,11 +63,13 @@ class Main extends Component {
           <UserCtx.Provider value={this.state.userLoginInfo}>
             <UserCtx.Consumer>
               {info => (
-              <Switch>
-                {(!info.token) && <Route path="/login" component={withRouter(Login)} />}
-                {info.token    && <Route path="/admin" component={withRouter(Admin)} />}
-                <Redirect to={info.token ? '/admin' : '/login'} />
-              </Switch>
+              <LocaleProvider locale={zh_CN}>
+                <Switch>
+                  {(!info.token) && <Route path="/login" component={withRouterLogin} />}
+                  {info.token    && <Route path="/admin" component={withRouterAdmin} />}
+                  <Redirect to={info.token ? '/admin' : '/login'} />
+                </Switch>
+              </LocaleProvider>
               )}
             </UserCtx.Consumer>
           </UserCtx.Provider>

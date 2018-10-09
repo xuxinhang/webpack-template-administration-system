@@ -281,6 +281,10 @@ HOST: http://admin.body-scan.org/
 + Response 200 (application/json)
     + Attributes(VaccantResp)
 
+## 任务操作:操作员下载文件
+- 注意Header配置
+- 操作员下载后标记任务为"操作员已下载附件"
+
 ## 任务操作:操作员上传报告并标记为处理完成 [/tasks/operate/{task_id}?action=process]
 ### task process [POST]
 这一操作(上传报告)可以被执行多次, 新上传文件覆盖原文件.
@@ -297,7 +301,8 @@ HOST: http://admin.body-scan.org/
 + Parameters
     + task_id: 78 (number) - 任务ID
 + Response 200 (application/json)
-    + Attributes(VaccantResp)
+    + Attributes
+        + task_report_url (string) - 上传的报告文件
     
 
 // TODO

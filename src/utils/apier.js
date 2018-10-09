@@ -179,8 +179,8 @@ const filters = {
         data: {
           pageInfo: usefulMockData.pageInfo,
           [`list|${input.pagination.pageSize}`]: [{
-            'task_id|+1': 16,
-            'num|+1': 16,
+            'task_id|+1': input.pagination.pageNumber * 100,
+            'num|+1': input.pagination.pageNumber * 100,
             'name': '@cname',
             'gender|1': [2, 1],
             'created_time': '@date',
@@ -205,6 +205,7 @@ const filters = {
       let mocked = {
         data: {
           task_detail: Mock.mock({
+            'taskId': input.taskId,
             'name': '@cname', 
             'gender|1-2': 2,
             'idcard': '@id',
@@ -218,6 +219,15 @@ const filters = {
             'name': '操作员姓名',
             'tel': '125643234565',
           },
+          org_detail: {
+            name: 'ORG',
+            tel: 'ORG123456',
+          },
+          task_stage: 'processing',
+          task_attachment_is_downloaded: false,
+          task_attachment_url: 'https://baidu.com',
+          task_report_url: 'https://weibo.com',
+          can_operator_confirm: false,
         },
         stat: usefulMockData.okStat,
       };
@@ -226,6 +236,36 @@ const filters = {
   },
   // 领取任务
   receiveTask: {
+    method: 'GET',
+    url: '',
+    handler: (resolve, reject, name, input) => {
+      if(input.taskId & 1) {
+        setTimeout(() => resolve({
+          status: usefulMockData.okStat,
+        }), 300);
+      } else {
+        setTimeout(() => reject({
+          status: usefulMockData.failStat,
+        }), 1000);
+      }
+    },
+  },
+  // 上传报告文件
+  uploadTaskReport: {
+    method: 'POST',
+    url: '',
+    handler: (resolve, reject, name, input) => {
+      setTimeout(() => resolve({
+        status: usefulMockData.okStat,
+        data: {
+          taskReportUrl: 'https://www.bing.com',
+          canOperatorConfirm: true,
+        },
+      }), 1000);
+    },
+  },
+  // 确认任务
+  confirmTask: {
     method: 'GET',
     url: '',
     handler: (resolve, reject, name, input) => {

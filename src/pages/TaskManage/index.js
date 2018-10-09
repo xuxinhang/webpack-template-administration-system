@@ -1,10 +1,12 @@
 import React from 'react';
 import { PageHeader } from '@/comps/PageHeader';
-import { Table, Button, Icon } from 'antd';
+import { Table, Button, Icon, Message } from 'antd';
 const { Column } = Table;
 import { ExpandedDetailRow } from './ExpandedDetailRow';
 import apier from '@/utils/apier';
 // import bindThis from '@/utils/bind-this-decorator';
+
+import './TaskManage.md.sass';
 
 
 class TaskManage extends React.Component {
@@ -53,13 +55,13 @@ class TaskManage extends React.Component {
     };
 
     apier.fetch('listTasks', { pagination, filters })
-    .then(({ data, status }) => {
+    .then(({ data }) => {
       this.setState({
         tableData: data.list,
         totalRecord: data.pageInfo.totalRecord,
       });
     })
-    .catch(({ data, status }) => {
+    .catch(({ status }) => {
       Message.warn('获取数据时出现错误：' + status.frimsg);
     })
     .finally(() => {
@@ -69,6 +71,17 @@ class TaskManage extends React.Component {
 
   componentDidMount() {
     this.paginationChangeHandler(1, 10);
+    // console.log('task manage componentDidMount');
+  }
+
+  componentDidUpdate(prevProps) {
+    if(prevProps.defaultFilters != this.props.defaultFilters) {
+      this.setState({
+        taskListFilters: { ...this.props.defaultFilters },
+      }, () => { // Run after states having been updated
+        this.paginationChangeHandler(1, 10);
+      });
+    }
   }
 
 
@@ -79,6 +92,11 @@ class TaskManage extends React.Component {
       'processing': '处理中',
       'confirming': '待确认',
       'finished': '已完结',
+    };
+
+    const toggleExpandClickHandler = e => {
+      let ds = e.target.dataset;
+      toggleExpandedRow(ds.key, ds.index, ds.tar);
     };
 
     const toggleExpandedRow = (key, index, tar) => {
@@ -94,12 +112,19 @@ class TaskManage extends React.Component {
       });
     };
 
+    const tableExpandedRowRender = (record, index, indent, expanded) => {
+      return (
+        <ExpandedDetailRow active={expanded} taskId={record.task_id} />
+      );
+    };
+
     return (
       <>
         <PageHeader title="任务管理"></PageHeader>
-        <ExpandedDetailRow />
+        {/* <ExpandedDetailRow /> */}
         <Table
           className="ds-ant-table-wrapper"
+          styleName="table-task-list"
           dataSource={this.state.tableData}
           rowClassName="ds-table-row"
           rowKey="task_id"
@@ -114,7 +139,7 @@ class TaskManage extends React.Component {
             showSizeChanger: true,
           }}
           loading={this.state.tableLoading}
-          expandedRowRender={record => <ExpandedDetailRow taskId={record.task_id} />}
+          expandedRowRender={tableExpandedRowRender}
           expandIconAsCell={false}
           expandIconColumnIndex={9}
           expandedRowClassName={() => 'ds-table-expanded-row'}
@@ -129,19 +154,25 @@ class TaskManage extends React.Component {
           <Column title="操作员" dataIndex="operator_name" />
           <Column title="测量部位" dataIndex="part" />
           <Column title="任务状态" dataIndex="task_stage" render={text => taskStageMap[text] || ''} />
-          <Column title="操作" key="op" align="right" className=""
+          <Column title="操作" key="op" align="right"
             render={(text, record, index) => (
               <>
-                {this.state.tableExpandedRowKeys.includes(record.task_id)
+                {/*this.state.tableExpandedRowKeys.includes(record.task_id)
                   ? <Button size="small"
+                      data-key={record.task_id}
+                      data-index={index}
+                      data-tar={false}
                     >
                       收起
                     </Button>
                   : <Button size="small"
+                      data-key={record.task_id}
+                      data-index={index}
+                      data-tar={true}
                     >
                       查看更多
                     </Button>
-                }
+                */}
               </>  
             )}
           />

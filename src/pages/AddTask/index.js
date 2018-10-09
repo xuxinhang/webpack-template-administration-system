@@ -1,5 +1,5 @@
 import React from 'react';
-import { Row, Col, Form, Input, Button, DatePicker, Select, Modal } from 'antd';
+import { Row, Col, Form, Input, Button, DatePicker, Select, Modal, Upload, Icon } from 'antd';
 const { TextArea } = Input;
 import { PageHeader } from '@/comps/PageHeader';
 import apier from '@/utils/apier.js';
@@ -75,11 +75,11 @@ class RawForm extends React.Component {
         if(errors) return;
         this.props.onSubmit.call(e.currentTarget, errors, values);
       });
-    }
+    };
   }
 
   render() {
-    const { getFieldDecorator } = this.formOp;
+    const { getFieldDecorator, getFieldValue } = this.formOp;
     const submitBtnProps = {
       style: { width: '8em' },
       type: 'primary',
@@ -168,11 +168,45 @@ class RawForm extends React.Component {
             </Form.Item>          
           </Col>
         </Row>
+        <div className="line-decorated-text" styleName="form-section-title">测量情况</div>  
+        <Row>
+          <Col span={36} styleName="form-row">
+            <Form.Item label="附件">
+              {getFieldDecorator('attachment', {
+                valuePropName: 'fileList',
+                getValueFromEvent: ({ file }) => [file],
+                initialValue: [],
+              })(
+                <Upload.Dragger
+                  name="task_upload"
+                  listType="picture"
+                  showUploadList={true}
+                  beforeUpload={() => false}
+                >
+                  {((value) => (
+                  <>
+                    <p className="ant-upload-drag-icon">
+                      <Icon type={value[0] ? 'file' : 'cloud-upload'} />
+                    </p>
+                    <p className="ant-upload-text">
+                      {value[0]
+                      ? `${value[0].name} (${Math.round(value[0].size/1024/1024*100)/100}MB)`
+                      : '点击上传附件'}
+                    </p>
+                    <p className="ant-upload-hint">
+                      请上传包括STL文件、照片和描述文件的压缩包
+                    </p>
+                  </>))(getFieldValue('attachment'))}
+                </Upload.Dragger>
+              )}
+            </Form.Item>          
+          </Col>
+        </Row>
         <Form.Item styleName="form-submit-bar">
           {[
-          <Button {...submitBtnProps} htmlType="submit">提交</Button>,
-          <Button {...submitBtnProps} disabled loading >正在提交</Button>,
-          <Button {...submitBtnProps} disabled>提交成功</Button>,
+          <Button {...submitBtnProps} key="submit" htmlType="submit">提交</Button>,
+          <Button {...submitBtnProps} key="loading" disabled loading >正在提交</Button>,
+          <Button {...submitBtnProps} key="success" disabled>提交成功</Button>,
           ][this.props.submitStage]}
         </Form.Item>
       </Form>
