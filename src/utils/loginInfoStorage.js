@@ -1,22 +1,31 @@
 const defaultLoginInfo = {
   username: '',
   token: false,
-  ident: false, 
+  ident: false,
+  expireTime: -1,
+};
+
+const checkExpireTime = info => {
+  return Date.now() > info.expireTime && info.expireTime >= 0;
 };
 
 function retrieveLoginInfo() {
   let stored = sessionStorage.getItem('userLoginInfo');
   if(stored) {
     try {
-      let info = JSON.parse(stored);
-      if(Date.now() > info.expireTime) {
-        storeLoginInfo
-      } 
+      let info = { ...defaultLoginInfo, ...JSON.parse(stored) };
+      console.log(info);
+      if(checkExpireTime(info) || !info.token) {
+        exitLogin();
+        return {...defaultLoginInfo};
+      }
+      return {...defaultLoginInfo, ...info};
     } catch(e) {
-      return {};
+      return {...defaultLoginInfo};
     }
   } else {
-    return {};
+    exitLogin();
+    return {...defaultLoginInfo};
   }
 }
 
@@ -31,25 +40,39 @@ function exitLogin() {
 let broadcastList = [];
 
 function broadcastLoginInfo(info) {
+  // console.log(broadcastList);
   broadcastList.forEach(curt => {
     curt(info);
   });
 }
 
 function registerLoginInfoBroadcast(callback) {
-  broadcastList.push(callback);
+  if(!broadcastList.includes(callback)) {
+    broadcastList.push(callback);
+  }
+}
+
+function syncLoginInfo() {
+  broadcastLoginInfo(retrieveLoginInfo());
 }
 
 function updateLoginInfo(info) {
-  storeLoginInfo(info);
-  broadcastLoginInfo(info);
+  if(checkExpireTime(info)) {
+    exitLogin();
+    return [false, '登录过期，请重新登录'];
+  } else {
+    storeLoginInfo(info);
+    broadcastLoginInfo(info);
+    return [true];
+  }
 }
 
-export { 
-  updateLoginInfo as update,
-  retrieveLoginInfo as retrieve,
-  exitLogin as exit,
-  registerLoginInfoBroadcast as registerBroadcast,
+export default { 
+  update: updateLoginInfo,
+  retrieve: retrieveLoginInfo,
+  exit: exitLogin,
+  registerBroadcast: registerLoginInfoBroadcast,
+  sync: syncLoginInfo,
   storeLoginInfo,
   retrieveLoginInfo,
   defaultLoginInfo,

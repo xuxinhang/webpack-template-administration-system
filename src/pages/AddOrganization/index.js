@@ -3,6 +3,7 @@ import { Row, Col, Form, Input, Button, Select, Modal } from 'antd';
 const { TextArea } = Input;
 import { PageHeader } from '@/comps/PageHeader';
 import apier from '@/utils/apier.js';
+import formRules from '@/utils/commonFormRules.js';
 
 import './AddOrganization.md.sass';
 // import '../../styles/common.sass';
@@ -75,7 +76,7 @@ class RawForm extends React.Component {
         if(errors) return;
         this.props.onSubmit.call(e.currentTarget, errors, values);
       });
-    }
+    };
   }
 
   render() {
@@ -93,7 +94,11 @@ class RawForm extends React.Component {
           <Col span={8}>
             <Form.Item label="姓名">
             {getFieldDecorator('name', {
-              rules: [{ min: 2, max: 30, required: true, message: '请输入合法的姓名' }],
+              validateTrigger: 'onBlur',
+              rules: [
+                { min: 2, max: 30, required: true, message: '请输入合法的姓名' },
+                formRules.personName,
+              ],
             })(
               <Input />
             )}
@@ -112,8 +117,9 @@ class RawForm extends React.Component {
             </Form.Item>          
           </Col>
           <Col span={8}>
-            <Form.Item label="机构">
-            {getFieldDecorator('organization', {
+            <Form.Item label="所属机构">
+            {getFieldDecorator('belong', {
+              validateTrigger: 'onBlur',
               rules: [
                 { max: 60, message: '内容过长' },
                 { required: true, message: '必填' },
@@ -128,6 +134,7 @@ class RawForm extends React.Component {
           <Col span={8}>
             <Form.Item label="工作邮箱">
             {getFieldDecorator('email', {
+              validateTrigger: 'onBlur',
               rules: [
                 { max: 40, message: '内容过长' },
                 { type: 'email', message: '请输入合法的电子邮件地址' },
@@ -141,7 +148,11 @@ class RawForm extends React.Component {
           <Col span={8}>
             <Form.Item label="电话号码">
             {getFieldDecorator('tel', {
-              rules: [{ required: true, message: '填写联系电话' }],
+              validateTrigger: 'onBlur',
+              rules: [
+                { required: true, message: '填写联系电话' },
+                formRules.tel,
+              ],
             })(
               <Input type="tel" />
             )} 
@@ -153,7 +164,11 @@ class RawForm extends React.Component {
           <Col span={8}>
             <Form.Item label="身份证">
             {getFieldDecorator('idcard', {
-              rules: [{ required: true, message: '需输入证件号' }],
+              validateTrigger: 'onBlur',
+              rules: [
+                { required: true, message: '需输入证件号' },
+                formRules.idcard,
+              ],
             })(
               <Input />
             )} 
@@ -164,7 +179,7 @@ class RawForm extends React.Component {
           <Col span={36}>
             <Form.Item label="邮寄地址">
             {getFieldDecorator('address', {
-              rules: [{ max: 8, message: '内容请控制在80字以内' }], // [TODO]
+              rules: [{ max: 80, message: '内容请控制在80字以内' }], // [TODO]
             })(
               <TextArea autosize={{ minRows: 1 }} placeholder="[选填] 80字以内" />
             )} 

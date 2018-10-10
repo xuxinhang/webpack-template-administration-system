@@ -79,5 +79,13 @@
     "mini-css-extract-plugin": "^0.4.3",
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.2"
+  },
+  "proxy": {
+    "/api": {
+      "pathRewrite": {"^/api" : "/"},
+      "target": "http://192.168.23.1:5000/",
+      "changeOrigin": true,
+      "ws": true
+    }
   }
 }

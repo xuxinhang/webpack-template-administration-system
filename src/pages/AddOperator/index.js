@@ -1,8 +1,10 @@
 import React from 'react';
 import { Row, Col, Form, Input, Button, Modal } from 'antd';
-const { TextArea } = Input;
+// const { TextArea } = Input;
 import { PageHeader } from '@/comps/PageHeader';
 import apier from '@/utils/apier.js';
+import formRules from '@/utils/commonFormRules.js';
+
 
 import sty from './AddOperator.md.sass';
 // import '../../styles/common.sass';
@@ -94,7 +96,11 @@ class RawForm extends React.Component {
           <Col span={8}>
             <Form.Item label="姓名">
             {getFieldDecorator('name', {
-              rules: [{ min: 2, max: 30, required: true, message: '请输入合法的姓名' }],
+              validateTrigger: 'onBlur',
+              rules: [
+                formRules.personName,
+                { min: 2, max: 30, required: true, message: '请输入合法的姓名' }
+              ],
             })(
               <Input />
             )}
@@ -103,8 +109,10 @@ class RawForm extends React.Component {
           <Col span={8}>
             <Form.Item label="联系电话">
             {getFieldDecorator('tel', {
+              validateTrigger: 'onBlur',
               rules: [
                 { max: 30, message: '内容过长' },
+                formRules.tel,
                 { required: true, message: '必填' },
               ],
             })(

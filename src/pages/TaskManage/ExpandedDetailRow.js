@@ -83,7 +83,7 @@ class ExpandedDetailRow extends React.Component {
     let { taskDetail: { taskId } } = this.state.detailData;
     Modal.confirm({
       title: '确实要领取此任务吗？',
-      onOk: close => {
+      onOk: () => { //close => {
         return apier.fetch('receiveTask', { taskId })
         .then(() => {
           Message.success('此任务已被你领取');
@@ -196,7 +196,7 @@ class ExpandedDetailRow extends React.Component {
       },
     };
 
-    const confirmBtnClickHandler = e => {
+    const confirmBtnClickHandler = () => {
       Modal.confirm({
         title: '确实要确认此任务吗？',
         content: '',
@@ -310,6 +310,7 @@ class ExpandedDetailRow extends React.Component {
                       : '⚠操作员尚未下载附件'}
                       <a
                         target="_blank"
+                        rel="noopener noreferrer"
                         download={'task_' + this.state.detailData.taskDetail.taskId + '_attchment'}
                         href={this.state.detailData.task_attachment_url}>
                         &nbsp;
@@ -359,6 +360,7 @@ class ExpandedDetailRow extends React.Component {
                   {this.state.detailData.task_report_url &&
                   <a
                     target="_blank"
+                    rel="noopener noreferrer"
                     download={'task_' + this.state.detailData.taskDetail.taskId + '_report'}
                     href={this.state.detailData.task_report_url}>
                     点击下载报告

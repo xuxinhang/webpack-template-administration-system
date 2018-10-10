@@ -5,7 +5,7 @@ import { Form, Icon, Input, Button, Checkbox, Card, Modal, message } from 'antd'
 import { UserCtx } from '@/contexts/contexts.js';
 import apier from '@/utils/apier.js';
 
-class App extends Component {
+class LoginPage extends Component {
   render() {
     return (
       <section styleName="login-wrap">
@@ -35,10 +35,24 @@ class NormalLoginForm extends React.Component {
           validPass = true;
           // Request APIs
           this.setState({formLoading: true});
-          apier.fetch('login', {username: values.userName, password: values.password})
+          apier.fetch('login', {
+            username: values.username,
+            password: values.password,
+          })
           .then(({data}) => {
-            updater({token: data.token, username: data.username, ident: data.ident});
-            message.success(`${data.username}，欢迎回到系统！`);
+            let result = updater({
+              token: data.token,
+              username: values.username,
+              ident: data.ident,
+              expireTime: data.expireTime,
+            });
+            console.log(result);
+            if(result && result[0]) {
+              this.props.form.resetFields(['password']);
+              message.success(`${values.username}，欢迎回到系统！`);
+            } else {
+              throw ({ stat: { frimsg: result[1] }});
+            }
           })
           .catch(({stat}) => {
             Modal.error({title: '登录遇到问题', content: `${stat.frimsg}`});
@@ -60,8 +74,8 @@ class NormalLoginForm extends React.Component {
       {loginInfo =>
         <Form onSubmit={this.handleSubmit(loginInfo.update)} className="login-form">
           <Form.Item>
-            {getFieldDecorator('userName', {
-              rules: [{ required: true, message: 'Please input your username!' }],
+            {getFieldDecorator('username', {
+              rules: [{ required: true, message: '请输入用户名' }],
             })(
               <Input
                 prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
@@ -72,7 +86,7 @@ class NormalLoginForm extends React.Component {
           </Form.Item>
           <Form.Item>
             {getFieldDecorator('password', {
-              rules: [{ required: true, message: 'Please input your Password!' }],
+              rules: [{ required: true, message: '请输入密码' }],
             })(
               <Input
                 prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
@@ -109,4 +123,4 @@ class NormalLoginForm extends React.Component {
 const WrappedNormalLoginForm = Form.create()(NormalLoginForm);
 
 
-export default App;
+export { LoginPage, WrappedNormalLoginForm as LoginForm };

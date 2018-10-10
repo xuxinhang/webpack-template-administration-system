@@ -88,6 +88,7 @@ HOST: http://admin.body-scan.org/
     + Attributes
         + token: authority_token (string) - Token
         + ident: 1 (number) - 账户身份
+        + expire_time: (number) - 以毫秒计的timestamp 
 
 ## 登出 [/logout]
 ### Logout [POST]
@@ -136,7 +137,7 @@ HOST: http://admin.body-scan.org/
         + data(array)
             + (object)
                 + operator_id: 23 (number, required) - 操作员ID
-                + bianhao: 01 (number) - [TODO] 编号是什么东东?
+                + num: 01 (number) - [TODO] 编号是什么东东?
                 + name: 会会艰 (string) - 姓名
                 + created_time: 2016/09/12 (string) - 创建时间
                 + tel: 13853321909 (string)
@@ -146,6 +147,7 @@ HOST: http://admin.body-scan.org/
                     + processing: 5 (number) - 处理中
                     + confirming: 3 (number) - 等待确认
                     + finished: 32 (number) - 已完成
+                + frozen: 2 - 封禁否
 
 ## 冻结/解冻操作员号 [/operator/freeze]
 ### freeze operator [POST]
@@ -188,7 +190,7 @@ HOST: http://admin.body-scan.org/
         + data(array)
             + (object)
                 + org_id: 23 (number, required) - 机构号ID
-                + bianhao: 01 (number) - [TODO] 编号是什么东东?
+                + num: 01 (number) - [TODO] 编号是什么东东?
                 + name: 会会艰 (string) - 姓名
                 + created_time: 2016/09/12 (string) - 创建时间
                 + tel: 13853321909 (string)
@@ -212,7 +214,7 @@ HOST: http://admin.body-scan.org/
 
 ## 添加任务 [/tasks/add]
 ### add task [POST]
-+ Request (multipart/form-data)
++ Request (multipart/form-data) 
     + Attributes
         + name: 老爹肚 (string)
         + gender: male (string)
@@ -251,10 +253,10 @@ HOST: http://admin.body-scan.org/
                 + org_belong: 法医中心 (string) - 机构客户所属机构
                 + part: 腹部 (string) - 测量部位
                 + task_stage(enum) - 任务处理阶段
-                    + receiving(string)
-                    + processing(string)
-                    + confirming(string)
-                    + finished(string)
+                    + receiving 0 (string)
+                    + processing 1 (string)
+                    + confirming 2 (string)
+                    + finished 3 (string)
 
 ## 任务详情 [/tasks/detail/{task_id}]
 ### task detail [GET]
@@ -315,10 +317,4 @@ HOST: http://admin.body-scan.org/
     + task_id: 78 (number) - 任务ID
 + Response 200 (application/json)
     + Attributes
-    
 
-// TODO
-task_stage: [
-    progressing !!!
-    .....
-]

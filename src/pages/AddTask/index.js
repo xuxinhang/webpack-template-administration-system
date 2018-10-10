@@ -3,6 +3,7 @@ import { Row, Col, Form, Input, Button, DatePicker, Select, Modal, Upload, Icon 
 const { TextArea } = Input;
 import { PageHeader } from '@/comps/PageHeader';
 import apier from '@/utils/apier.js';
+import formRules from '@/utils/commonFormRules.js';
 
 import './AddTask.md.sass';
 
@@ -72,7 +73,11 @@ class RawForm extends React.Component {
     this.submitHandler = e => {
       e.preventDefault();
       this.formOp.validateFields((errors, values) => {
-        if(errors) return;
+        if(errors) return; // [TODO]
+        if(!this.formOp.getFieldValue('attachments').length) {
+          Modal.warning({ title: '请选择要上传的附件' });
+          return;
+        }
         this.props.onSubmit.call(e.currentTarget, errors, values);
       });
     };
@@ -93,7 +98,10 @@ class RawForm extends React.Component {
           <Col span={8}>
             <Form.Item label="姓名">
             {getFieldDecorator('name', {
-              rules: [{ min: 2, max: 30, required: true, message: '请输入合法的姓名' }],
+              rules: [
+                formRules.personName,
+                { min: 2, max: 30, required: true, message: '请输入合法的姓名' },
+              ],
             })(
               <Input />
             )}
@@ -105,8 +113,8 @@ class RawForm extends React.Component {
               rules: [{ required: true, message: '请选择性别' }],
             })(
               <Select style={{width: '100%'}} placeholder="点击选择">
-                <Option value={0}>男</Option>
-                <Option value={1}>女</Option>
+                <Select.Option value={0}>男</Select.Option>
+                <Select.Option value={1}>女</Select.Option>
               </Select>
             )}
             </Form.Item>          
@@ -114,7 +122,10 @@ class RawForm extends React.Component {
           <Col span={8}>
             <Form.Item label="身份证">
             {getFieldDecorator('idcard', {
-              rules: [{ required: true, message: '需输入证件号' }],
+              rules: [
+                formRules.idcard,
+                { required: true, message: '需输入证件号' },
+              ],
             })(
               <Input />
             )} 
@@ -175,16 +186,21 @@ class RawForm extends React.Component {
               {getFieldDecorator('attachments', {
                 valuePropName: 'fileList',
                 getValueFromEvent: ({ file }) => {
-                  if(file.size > 10 * 1024 * 1024) {
-                    Modal.warning({
-                      title: '选择的文件不符合要求',
-                      content: '文件体积要小于10MB',
-                    });
-                    return [];
-                  }
+                  // 现在我们有了内建的校验机制（下面不远处）
+                  // if(file.size > 16 * 1024 * 1024) {
+                  //   Modal.warning({
+                  //     title: '选择的文件不符合要求',
+                  //     content: '文件体积要小于16MB',
+                  //   });
+                  //   return [];
+                  // }
                   return [file];
                 },
                 initialValue: [],
+                rules: [
+                  formRules.uploadFile,
+                  { required: true, message: '必须上传附件' },
+                ],
               })(
                 <Upload.Dragger
                   name="task_upload"
