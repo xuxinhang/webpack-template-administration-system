@@ -6,6 +6,8 @@ import { ExpandedDetailRow } from './ExpandedDetailRow';
 import apier from '@/utils/apier';
 // import bindThis from '@/utils/bind-this-decorator';
 
+import _ from 'lodash';
+
 import './TaskManage.md.sass';
 
 
@@ -71,13 +73,13 @@ class TaskManage extends React.Component {
 
   componentDidMount() {
     this.paginationChangeHandler(1, 10);
-    // console.log('task manage componentDidMount');
   }
 
   componentDidUpdate(prevProps) {
-    if(prevProps.defaultFilters != this.props.defaultFilters) {
+    // [NOTICE] 千万不要比较对象是否相等
+    if(!_.isEqual(prevProps.defaultFilters, this.props.defaultFilters)) {
       this.setState({
-        taskListFilters: { ...this.props.defaultFilters },
+        taskListFilters: {...this.props.defaultFilters},
       }, () => { // Run after states having been updated
         this.paginationChangeHandler(1, 10);
       });

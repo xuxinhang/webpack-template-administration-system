@@ -18,6 +18,7 @@ class ExpandedDetailRow extends React.Component {
 
     this.state = {
       // 数据
+      currentTaskId: undefined,
       detailData: {
         taskDetail:{
           'taskId': props.taskId || '12',
@@ -49,6 +50,9 @@ class ExpandedDetailRow extends React.Component {
       uploadBtnFileList: [],
       uploadBtnLoading: false,
     };
+
+    this.currentTaskId = this.props.taskId;
+
   }
 
   componentDidMount() {
@@ -58,29 +62,55 @@ class ExpandedDetailRow extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    // console.log(prevProps, this.props);
-    // let prevTaskId = prevProps.taskId;
-    let prevTaskIdInState = prevState.detailData.taskDetail.taskId;
-    let newTaskId = this.props.taskId;
-    if(prevTaskIdInState != newTaskId && this.props.active) {
-      this.fetchDetailData({ taskId: newTaskId });
+    if(this.props.active == true) {
+      if(this.state.currentTaskId != this.props.taskId) {
+        this.fetchDetailData({ taskId: this.props.taskId });
+      }
+    } else if(this.props.active == false) {
+      // Do Nothing
     }
+
+
+
+    // console.log(prevProps, this.props);
+    // // let prevTaskId = prevProps.taskId;
+    // // let prevTaskIdInState = prevState.detailData.taskDetail.taskId;
+    // let prevTaskIdInState = prevState.currentTaskId;
+    // let newTaskId = this.props.taskId;
+    // if(prevTaskIdInState !== newTaskId && this.props.active) {
+    //   if(this.currentTaskId != newTaskId) {
+    //     this.currentTaskId = newTaskId;
+    //     this.fetchDetailData({ taskId: newTaskId });
+    //   }
+    // }
+
   }
 
   async fetchDetailData({ taskId }) {
-    this.setState({ dataLoading: true });
+    this.setState({
+      dataLoading: true,
+      // 这一行很重要，没有这一行会因为componentDidUpdate陷入循环
+      // 本函数(fetchDetailData) 一开始就要设置 currentTaskId
+      currentTaskId: taskId,
+    });
     try {
       let { data } = await apier.fetch('taskDetail', { taskId });
-      this.setState({ detailData: data });
+      this.setState({
+        detailData: data,
+        dataLoading: false,
+        currentTaskId: taskId,
+      });
     } catch({ data, stat }) {
       Message.error('获取任务详情错误：' + stat.frimsg);
-    } finally {
-      this.setState({ dataLoading: false });
+      this.setState({
+        dataLoading: false,
+        currentTaskId: taskId,
+      });
     }
   }
 
   receiveTaskBtnClickHandler() {
-    let { taskDetail: { taskId } } = this.state.detailData;
+    let { currentTaskId: taskId } = this.state.detailData;
     Modal.confirm({
       title: '确实要领取此任务吗？',
       onOk: () => { //close => {
@@ -136,10 +166,10 @@ class ExpandedDetailRow extends React.Component {
       },
       beforeUpload: file => {
         // [TODO] 文件过滤规则
-        if(file.size > 50 * 1024 * 1024) {
+        if(file.size > 16 * 1024 * 1024) {
           Modal.info({
             title: '选择的文件不符合规范',
-            content: '文件大小不应超过50MB',
+            content: '文件大小不应超过16MB',
           });
           this.setState({ uploadBtnFileList: [] });
           return false;
@@ -168,16 +198,11 @@ class ExpandedDetailRow extends React.Component {
       customRequest: async ({ onProgress, onError, onSuccess, data: uploadData, file }) => {
         onProgress();
         this.setState({ uploadBtnLoading: true });
-        // File Object
-        let fd = new FormData();
-        fd.append('task_report_raw_file_type', file.type);
-        fd.append('task_report_raw_file_name', file.name);
-        fd.append('task_report_file', file);
         // Request
         try {
           let { data } = await apier.fetch('uploadTaskReport', {
             ...uploadData,
-            formdata: fd,
+            file: file,
           });
           this.setState(prevState => ({
             detailData: {

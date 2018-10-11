@@ -98,10 +98,10 @@ class RawForm extends React.Component {
           <Col span={8}>
             <Form.Item label="姓名">
             {getFieldDecorator('name', {
-              rules: [
-                formRules.personName,
-                { min: 2, max: 30, required: true, message: '请输入合法的姓名' },
-              ],
+              // rules: [
+              //   // formRules.personName,
+              //   { min: 2, max: 30, required: true, message: '请输入合法的姓名' },
+              // ],
             })(
               <Input />
             )}
@@ -110,7 +110,6 @@ class RawForm extends React.Component {
           <Col span={8}>
             <Form.Item label="性别">
             {getFieldDecorator('gender', {
-              rules: [{ required: true, message: '请选择性别' }],
             })(
               <Select style={{width: '100%'}} placeholder="点击选择">
                 <Select.Option value={0}>男</Select.Option>
@@ -123,7 +122,7 @@ class RawForm extends React.Component {
             <Form.Item label="身份证">
             {getFieldDecorator('idcard', {
               rules: [
-                formRules.idcard,
+                // formRules.idcard,
                 { required: true, message: '需输入证件号' },
               ],
             })(
@@ -137,10 +136,10 @@ class RawForm extends React.Component {
           <Col span={8}>
             <Form.Item label="测量部位">
             {getFieldDecorator('part', {
-              rules: [
-                { max: 40, message: '内容过长' },
-                { required: true, message: '必填' },
-              ],
+              // rules: [
+              //   { max: 40, message: '内容过长' },
+              //   { required: true, message: '必填' },
+              // ],
             })(
               <Input />
             )}
@@ -149,10 +148,10 @@ class RawForm extends React.Component {
           <Col span={8}>
             <Form.Item label="测量方法">
             {getFieldDecorator('method', {
-              rules: [
-                { max: 40, message: '内容过长' },
-                { required: true, message: '必填' },
-              ],
+              // rules: [
+              //   { max: 40, message: '内容过长' },
+              //   { required: true, message: '必填' },
+              // ],
             })(
               <Input />
             )}
@@ -172,7 +171,10 @@ class RawForm extends React.Component {
           <Col span={36} styleName="form-row">
             <Form.Item label="测量情况概述">
             {getFieldDecorator('description', {
-              rules: [{ max: 6, message: '内容请控制在600字以内' }], // [TODO]
+              rules: [
+                // { max: 6, message: '内容请控制在600字以内' },
+                // { required: true, message: '必需填写详细描述' },
+              ], // [TODO]
             })(
               <TextArea autosize={{ minRows: 5 }} placeholder="选填，600字以内" />
             )} 
@@ -187,18 +189,11 @@ class RawForm extends React.Component {
                 valuePropName: 'fileList',
                 getValueFromEvent: ({ file }) => {
                   // 现在我们有了内建的校验机制（下面不远处）
-                  // if(file.size > 16 * 1024 * 1024) {
-                  //   Modal.warning({
-                  //     title: '选择的文件不符合要求',
-                  //     content: '文件体积要小于16MB',
-                  //   });
-                  //   return [];
-                  // }
                   return [file];
                 },
                 initialValue: [],
                 rules: [
-                  formRules.uploadFile,
+                  // formRules.uploadFile,
                   { required: true, message: '必须上传附件' },
                 ],
               })(

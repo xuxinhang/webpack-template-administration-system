@@ -2,6 +2,7 @@ import CattleBridge from 'cattle-bridge';
 import axios from 'axios';
 import Mock from 'mockjs';
 import loginInfo from '@/utils/loginInfoStorage.js';
+import _ from 'lodash';
 
 // mock data
 const usefulMockData = {
@@ -64,9 +65,10 @@ const objectMapper = (keyMap) => {
                                : [m[0], m[0]];
       let rawValue = source[fromKey];
       if(rawValue !== undefined) {
-        target[toKey] = (m[2] && m[2].call)
-        ? (m[2])(rawValue)
-        : rawValue;
+        let fn = reverse ? m[3] : m[2];
+        target[toKey] = (fn && fn.call)
+                        ? fn(rawValue)
+                        : rawValue;
       } else if(m[3] !== undefined) {
         target[toKey] = m[3];
       }
@@ -82,16 +84,15 @@ const operatorItemMapper = objectMapper([
   ['createdTime', 'created_time'],
   ['tel', 'tel'],
   ['password', 'password'],
-  // ['taskStatistics', 'task_statistics'],
-  ['frozen', 'frozen'],
+  ['frozen', 'frozen', v => v-1, v => [2,1][v]],
 ]);
 
 const organizationItemMapper = objectMapper([
   ['orgId', 'org_id'],
-  ['address'],
-  ['gender', 'gender', v => genderMap[v]],
-  ['idcard'],
-  // ['organization'],
+  ['address', 'address'],
+  ['gender', 'gender', v => genderMap[v], v => genderMap[v]],
+  ['idcard', 'idcard'],
+  ['organization'],
   ['num', 'bianhao'],
   ['name', 'name'],
   ['createdTime', 'created_time'],
@@ -99,8 +100,8 @@ const organizationItemMapper = objectMapper([
   ['password', 'password'],
   ['belong', 'belong'],
   ['email', 'email'],
-  ['taskNumber', 'task_number'],
-  ['frozen', 'frozen'],
+  ['taskNumber', 'taskNumber'],
+  ['frozen', 'frozen', v => v-1, v => [2,1][v]],
 ]);
 
 const taskStageMapper = objectMapper([
@@ -126,12 +127,9 @@ const taskItemMapper = objectMapper([
   ['taskId', 'task_id'],
   ['num', 'bianhao'],
   ['name', 'name'],
-  ['gender', 'gender', v => {
-    console.log(genderMap[v], v);
-    return genderMap[v];
-  }],
+  ['gender', 'gender', v => genderMap[v], v => genderMap[v]],
   ['createdTime', 'created_time'],
-  ['time', 'time', processTimeString],
+  ['time', 'time', processTimeString, processTimeString],
   ['idcard', 'idcard'],
   ['method', 'method'],
   ['orgName', 'org_name'],
@@ -140,11 +138,7 @@ const taskItemMapper = objectMapper([
   ['part', 'part'],
   ['age', 'age'],
   ['description', 'description'],
-  [
-    'taskStage',
-    'stage',
-    v => taskStageMap[v],
-  ],
+  ['taskStage', 'stage', v => taskStageMap[v], v => taskStageMap[v]],
 ]);
 
 const identMap = {
@@ -154,134 +148,103 @@ const identMap = {
 };
 
 
-/*
-  1）用户登录：
-  200：登录成功并返回响应的data
+const statusMsgMap = {
+  // 登录 @
+  login: {
+    201: '没有密码或者用户名',
+    202: '账号不存在',
+    203: '密码错误',
+    204: '账号被冻结',
+  },
+  // 登出
+  logout: {
+  },
+  // 修改密码
+  modifyPassword: {
+    201: '没有找到该用户',
+    202: '没有传入原始密码或者新密码的值',
+    203: '原始密码错误',
+  },
+  // 添加任务
+  addItem: {
+    202: '没有权限，必须是机构账户才行',
+    203: '参数错误，检查一下传入的参数字段',
+  },
+  // 添加机构账号
+  addOrganization: {
+    202: '没有权限',
+    203: '参数错误',
+    204: '账户已存在，电话应该唯一',
+  },
+  // 添加操作员
+  addOperator: {
+    202: '没有权限',
+    203: '参数错误',
+    204: '账户已存在，电话应该唯一',
+  },
+  // 操作员列表
+  listOperators: {
+    202: '没有权限，必须是超管账号才行',
+    203: '参数错误，pageSize和pageNumber是否传入以及是否大于零',
+  },
+  // 冻结解冻操作员 @
+  freezeOperator: {
+    202: '没有权限',
+    203: '参数错误，检查传入字段是否正确',
+    204: '找不到对应的账号！',
+  },
+  // 列出所有机构账户 @
+  listOrganizations: {
+    202: '没有权限，必须是超管账号才行',
+    203: '参数错误，pageSize和pageNumber是否传入以及是否大于零',
+  },
+  // 冻结解冻机构账户 @
+  freezeOrganization: {
+    202: '没有权限',
+    203: '参数错误，检查传入字段是否正确',
+    204: '找不到对应的账号！',
+  },
+  // 任务列表 @
+  listTasks: {
+    203: '参数错误，检查一下传入的参数字段',
+  },
+  // 获取任务详情
+  taskDetail: {
+    202: '该任务不存在',
+  },
+  // 领取任务 @
+  receiveTask: {
+    202: '没有权限',
+    203: '该任务不存在',
+    204: 'action字段有误',
+  },
+  // 上传报告文件 @ $
+  uploadTaskReport: {
+    202: '没有权限',
+    203: '该任务不存在',
+    204: 'action字段有误',
+  },
+  // 确认任务 @
+  confirmTask: {
+    202: '没有权限',
+    203: '该任务不存在',
+    204: 'action字段有误',
+  },
+  common: {
+    301: '没有token传入，需要重新登录',
+    302: 'token过期，需要重新登录',
+    303: 'token错误。',
+    200: '成功',
+  }
+};
 
-  201 ：没有密码或者用户名
-
-  202 ： 账号不存在
-
-  203：密码错误
-
-  204: 账号被冻结！
-  备注：登录成功返回的ident字段：0代表超管、1代表操作员、2代表客户机构操作员
-
-  2) 修改密码（/modifyPassword）
-  200:修改成功
-
-  201：没有找到该用户
-
-  202：没有传入原始密码或者新密码的值
-
-  203：原始密码错误
-  3）添加操作员账号（/operator/add）
-  200:添加成功
-
-  201：该token用户不存在
-
-  202:没有权限，必须是超管账号才行
-
-  203：没有传入name 或者 tel的值
-
-  204:  账户已存在！（tel的值在数据库中唯一）
-  备注：tel字段必须在前端验证一下是手机号（11位），后端没有进行验证。
-
-  4）获取操作员列表（/operator/list）
-  200:获取成功返回数据
-
-  201：该token用户不存在
-
-  202:没有权限，必须是超管账号才行
-
-  203：参数错误，pageSize和pageNumber是否传入以及是否大于零
-  备注：返回data数据中的frozen字段 1代表正常，0代表冻结！
-
-  5）冻结账号：
-  200:操作成功
-
-  201：该token用户不存在
-
-  202:没有权限，必须是超管账号才行
-
-  203：参数错误，检查传入字段是否正确
-
-  204：找不到对应的账号！
-  6）所有对机构账号的操作
-  （增加、冻结解冻、获取列表），返回值参考上面3）4）5）对”操作员“的操作
-
-  7）添加任务
-  200:添加成功
-
-  201：该token用户不存在
-
-  202:没有权限，必须是机构账户才行
-
-  203：参数错误，检查一下传入的参数字段，包括是否有文件
-  备注：传入的日期格式必须是2018/10/09这样的格式~
-
-  8）获取任务列表
-  200:获取成功
-
-  201：该token用户不存在
-
-  202:没有权限，必须是机构账户才行
-
-  203：参数错误，检查一下传入的参数字段
-  备注：
-
-  **1）三种身份请求的任务列表返回结果不相同：超管获取所有任务列表，操作员获取没有领取的任务列表以及与自己相关的任务列表，机构操作员获取与自己相关的任务列表 **
-
-  2）‘stage’字段含义：
-
-  0 代表未领取，
-
-  1代表操作员处理中
-
-  2代表客户机构待确认
-
-  3代表任务流程已完成
-
-  3）对于操作员“领取数”和“处理中”的两个值，无法进行区分，因为操作员下载客户机构的文件的时候，没有相应的接口，后端无法判断操作员是否已经下载文件，即无法区分领取任务和处理任务两种状态（receive_num 和 process_num 无法区分，暂时做等值处理）
-
-  8）获取任务详细信息
-  200:获取成功
-
-  201：该token用户不存在
-
-  202：该任务不存在
-  备注：若该任务没有被操作员认领则传回的operator相关字段是空值
-
-  9）对任务的各种操作
-  200:操作成功
-
-  201：该token用户不存在
-
-  202:没有权限（只允许操作员或者机构客户操作，超管不行）
-
-  203：该任务不存在
-
-  204：action字段有误
-  备注：对于操作员“领取数”和“处理中”的两个值，无法进行区分，因为操作员下载客户机构的文件的时候，没有相应的接口，后端无法判断操作员是否已经下载文件，即无法区分领取任务和处理任务两种状态
-
-  4.身份验证，
-  每次请求需要发送token，若token异常：
-
-  301：没有token传入，需要重新登录
-
-  302：token过期，需要重新登录
-
-  303：token错误。
-  如果token正常则执行响应的操作并返回数据。
-
-  备注：后端暂时设置的token有效期是一天，24h之后需要重新登录获取新的token。
-*/
 
 const API_SERVER_URL = '/api';
 
 const filters = {
   // 登录 @
   login: {
+    name: 'login',
     method: 'POST',
     url: API_SERVER_URL + '/login',
     chop: inp => ({
@@ -295,13 +258,12 @@ const filters = {
              : 'unknown',
       expireTime: +rep.data.expire_time || 0, // Timestamp
     }),
-    handlerr: (resolve, reject, name, input) => {
+    handler: (resolve, reject, name, input) => {
       setTimeout(() => {
         resolve({
           stat: 0,
           data: {
             token: 'TEST_TOKEN',
-            // username: input.username,
             ident: input.username,
             expireTime: Date.now() * 1.2,
           },
@@ -311,6 +273,7 @@ const filters = {
   },
   // 登出 @
   logout: {
+    name: 'logout',
     method: 'POST',
     url: API_SERVER_URL + '/logout',
     handlerr: (resolve, reject, name, input) => {
@@ -324,6 +287,7 @@ const filters = {
   },
   // 修改密码 @
   modifyPassword: {
+    name: 'modifyPassword',
     method: 'POST',
     url: API_SERVER_URL + '/modify_password',
     chop: inp => ({
@@ -341,17 +305,17 @@ const filters = {
   },
   // 添加任务 (这里的实现不优雅)
   addItem: {
+    name: 'addItem',
     method: 'POST',
     url: API_SERVER_URL + '/tasks/add',
     chop: inp => {
       let fd = new FormData();
-      fd.append('attachments', inp.attachments[0], 'task_attachment');
+      fd.append('attachments', inp.attachments[0]);
       let pro = taskItemMapper(inp);
-      Object.keys(pro)
-      .forEach(k => fd.append(k, pro[k]));
+      Object.keys(pro).forEach(k => fd.append(k, pro[k]));
       return fd;
     },
-    trim: rep => taskItemMapper(rep.data),
+    trim: rep => taskItemMapper(rep.data, true),
     handlerr: (resolve, reject, name, input) => {
       setTimeout(() => {
         (input.gender ? resolve : reject)({
@@ -363,6 +327,7 @@ const filters = {
   },
   // 添加机构账号 @
   addOrganization: {
+    name: 'addOrganization',
     method: 'POST',
     url: API_SERVER_URL + '/organization/add',
     chop: inp => organizationItemMapper(inp, false),
@@ -378,6 +343,7 @@ const filters = {
   },
   // 添加操作员 @
   addOperator: {
+    name: 'addOperator',
     method: 'POST',
     url: API_SERVER_URL + '/operator/add',
     chop: inp => operatorItemMapper(inp, false),
@@ -393,6 +359,7 @@ const filters = {
   },
   // 操作员列表 @
   listOperators: {
+    name: 'listOperators',
     method: 'POST',
     url: API_SERVER_URL + '/operator/list',
     chop: inp => ({
@@ -403,7 +370,7 @@ const filters = {
       list: Array.isArray(rep.data)
         && rep.data.map(item => ({
           ...operatorItemMapper(item, true),
-          taskStatistics: taskStageMapper(item.task_statistics, true),
+          taskStatistics: {...item.task_statistics},
         })),
     }),
     handlerr: (resolve, reject, name, input) => {
@@ -433,8 +400,13 @@ const filters = {
   },
   // 冻结解冻操作员 @
   freezeOperator: {
-    method: 'GET',
-    url: inp => `/operator/freeze?operator_id=${inp.operatorId}&action=${inp.action}`,
+    name: 'freezeOperator',
+    method: 'POST',
+    url: inp => API_SERVER_URL + '/operator/freeze',
+    chop: inp => ({
+      operator_id: inp.operatorId,
+      action: inp.action,
+    }),
     handlerr: (resolve, reject, name, input) => {
       setTimeout(() => {
         if(input.operator_id % 2) {
@@ -447,6 +419,7 @@ const filters = {
   },
   // 列出所有机构账户 @
   listOrganizations: {
+    name: 'listOrganizations',
     method: 'POST',
     url: () => API_SERVER_URL + '/organization/list',
     chop: inp => ({
@@ -481,8 +454,9 @@ const filters = {
   },
   // 冻结解冻机构账户 @
   freezeOrganization: {
+    name: 'freezeOrganization',
     method: 'POST',
-    url: inp => API_SERVER_URL + `/organization/freeze`,
+    url: API_SERVER_URL + '/organization/freeze',
     chop: inp => ({
       org_id: inp.orgId,
       action: inp.action,
@@ -499,18 +473,19 @@ const filters = {
   },
   // 任务列表 @
   listTasks: {
+    name: 'listTasks',
     method: 'POST',
     url: API_SERVER_URL + '/tasks/list',
     chop: inp => ({
       pagination: processPagination(inp.pagination),
-      task_stage: taskStageMap[inp.filters.taskStage],
+      query_stage: taskStageMap[inp.filters.taskStage], // [TODO]
     }),
     trim: rep => ({
       pageInfo: rep.pageInfo,
       list: Array.isArray(rep.data)
             && rep.data.map(item => taskItemMapper(item, true)),
     }),
-    handlerr: (resolve, reject, name, input) => {
+    handler: (resolve, reject, name, input) => {
       let mocked = Mock.mock({
         data: {
           pageInfo: usefulMockData.pageInfo,
@@ -536,41 +511,15 @@ const filters = {
   },
   // 获取任务详情
   taskDetail: {
+    name: 'taskDetail',
     method: 'POST',
     url: inp => API_SERVER_URL + `/tasks/detail/${inp.taskId}`,
     trim: rep => {
-      // if(!rep.data) return {};
       return {
-          taskDetail: Mock.mock({
-            'taskId': input.taskId,
-            'name': '@cname', 
-            'gender': 2,
-            'idcard': '@id',
-            'part': '春树里',
-            'method': '@word',
-            'time': '@date',
-            'description': '@cparagraph',
-            'age|10-88': 0,
-          }),
-          operatorDetail: {
-            'name': '操作员姓名',
-            'tel': '125643234565',
-          },
-          orgDetail: {
-            name: 'ORG',
-            tel: 'ORG123456',
-          },
-          taskStage: 'processing',
-          task_attachment_is_downloaded: false,
-          task_attachment_url: 'https://baidu.com',
-          task_report_url: false, // 'https://weibo.com',
-          can_operator_confirm: false,
-        };
-      return {
-        taskDetail: {} && taskItemMapper(rep.data.task_detail, true),
-        operatorDetail: {} && operatorItemMapper(rep.data.operator_detail, true),
-        orgDetail: {} && organizationItemMapper(rep.data.organization_detail, true),
-        taskStage: taskStageMap[rep.data.task_stage],
+        taskDetail: taskItemMapper(rep.data.task_detail, true),
+        operatorDetail: operatorItemMapper(rep.data.operator_detail, true),
+        orgDetail: organizationItemMapper(rep.data.organization_detail, true),
+        taskStage: taskStageMap[rep.data.stage],
         task_attachment_is_downloaded: !!rep.data.task_attachment_is_downloaded,
         task_attachment_url: downloadUrlFilter(rep.data.task_attachment_url),
         task_report_url: downloadUrlFilter(rep.data.task_report_url),
@@ -612,6 +561,7 @@ const filters = {
   },
   // 领取任务 @
   receiveTask: {
+    name: 'receiveTask',
     method: 'GET',
     url: inp => API_SERVER_URL + `/tasks/operate/${inp.taskId}?action=receive`,
     trim: rep => rep.data || {},
@@ -627,11 +577,17 @@ const filters = {
       }
     },
   },
-  // 上传报告文件 @
+  // 上传报告文件 @ $
   uploadTaskReport: {
+    name: 'uploadTaskReport',
     method: 'POST',
     url: inp => API_SERVER_URL + `/tasks/operate/${inp.taskId}?action=process`,
-    chop: inp => inp.formdata,
+    chop: inp => {
+      let fd = new FormData();
+      fd.append('task_report_file', inp.file);
+      fd.append('task_id', inp.taskId);
+      return fd;
+    },
     trim: rep => ({
       task_report_url: downloadUrlFilter(rep.data && rep.data.task_report_url),
     }),
@@ -647,8 +603,9 @@ const filters = {
   },
   // 确认任务 @
   confirmTask: {
+    name: 'confirmTask',
     method: 'GET',
-    url: inp => API_SERVER_URL +`/tasks/operate/${inp.taskId}?action=confirm`,
+    url: inp => API_SERVER_URL + `/tasks/operate/${inp.taskId}?action=confirm`,
     trim: rep => rep.data,
     handlerr: (resolve, reject, name, input) => {
       if(input.taskId & 1) {
@@ -669,24 +626,22 @@ export default new CattleBridge({
   debug: (process.env.NODE_ENV == 'development'),
   filters,
   gtrim(rep) {
-    // if(typeof rep !== Object) {
-    //   return {
-    //     status: {},
-    //     data: {},
-    //   };
-    // }
-
+    if(!(rep && rep.status)) {
+      return {
+        status: {},
+        data: {},
+      };
+    }
     if(rep.pageInfo) {
       rep.pageInfo = processPageInfo(rep.pageInfo);
     }
-    // if(!rep.data) {
-      // rep.data = {};
-    // }
+    if(!rep.data) {
+      rep.data = {};
+    }
     return rep;
   },
   requester(options) {
     let info = loginInfo.retrieve();
-
     let customizedHeaders = {
       'Auth-Token': info.token
     };
@@ -698,7 +653,7 @@ export default new CattleBridge({
       headers: customizedHeaders,
     });
   },
-  stater(result, respData, respStat) {
+  stater(result, respData, respStat, filter) {
     // [TODO]
     // If token is invalid, then:
     // loginInfo.exit();
@@ -710,20 +665,22 @@ export default new CattleBridge({
         msg: 'HTTP Error',
         frimsg: '网络或服务器错误',
       };
-    } /* else if (typeof respData !== Object || (!respData.status)) {
+    } else if (!(respData && respData.status)) {
       result(false);
       return {
         code: -2,
         msg: 'invalid data',
         frimsg: '返回的数据是无效的',
       };
-    } */ else {
+    } else {
       result(respData.status.code == 200);
       return {
         code: respData.status.code || 300,
         msg: respData.status.msg || 'Unknown Error',
-        frimsg: respData.status.msg || '未知错误',
-        // mapToFriendlyMessage(respData.status),
+        frimsg: _.get(statusMsgMap, `${filter.name}.${respData.status.code}`)
+                || _.get(statusMsgMap, `common.${respData.status.code}`)
+                || respData.status.msg
+                || '未知错误',
       };
     }
   },

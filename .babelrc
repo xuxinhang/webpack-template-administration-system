@@ -29,5 +29,6 @@
       "decoratorsBeforeExport": false,
     }],
     ["@babel/plugin-transform-runtime"],
+    ["lodash"]
   ]
 }

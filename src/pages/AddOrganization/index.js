@@ -179,7 +179,10 @@ class RawForm extends React.Component {
           <Col span={36}>
             <Form.Item label="邮寄地址">
             {getFieldDecorator('address', {
-              rules: [{ max: 80, message: '内容请控制在80字以内' }], // [TODO]
+              rules: [
+                { max: 80, message: '内容请控制在80字以内' },
+                { required: true, message: '必填' },
+              ], // [TODO]
             })(
               <TextArea autosize={{ minRows: 1 }} placeholder="[选填] 80字以内" />
             )} 

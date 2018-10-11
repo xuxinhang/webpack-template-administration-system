@@ -15,6 +15,7 @@
     "babel-jest": "23.6.0",
     "babel-loader": "^8.0.4",
     "babel-plugin-import": "^1.9.1",
+    "babel-plugin-lodash": "^3.3.4",
     "babel-preset-react-app": "^3.1.2",
     "babel-runtime": "^7.0.0-0",
     "case-sensitive-paths-webpack-plugin": "2.1.2",
@@ -37,6 +38,8 @@
     "jest": "23.6.0",
     "less-loader": "^4.1.0",
     "localforage": "^1.7.2",
+    "lodash": "^4.17.11",
+    "lodash-webpack-plugin": "^0.11.5",
     "mockjs": "^1.0.1-beta3",
     "node-sass": "^4.9.3",
     "object-assign": "4.1.1",
@@ -82,8 +85,11 @@
   },
   "proxy": {
     "/api": {
-      "pathRewrite": {"^/api" : "/"},
-      "target": "http://192.168.23.1:5000/",
+      "pathRewrite": {
+        "^/api": "/"
+      },
+      "targett": "http://192.168.23.1:5000/",
+      "target": "http://118.24.183.158/",
       "changeOrigin": true,
       "ws": true
     }
