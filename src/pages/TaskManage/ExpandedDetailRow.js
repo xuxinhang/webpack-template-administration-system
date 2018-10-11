@@ -3,6 +3,7 @@ import { Row, Col, Button, Icon, Popover, Modal, Message, Spin, Upload } from 'a
 import DsSteps from '@/comps/DsSteps';
 import { UserCtx } from '@/contexts/contexts.js';
 import apier from '@/utils/apier.js';
+import formRules from '@/utils/commonFormRules.js';
 
 import './ExpandedDetailRow.md.sass';
 
@@ -25,7 +26,7 @@ class ExpandedDetailRow extends React.Component {
           'name': '@cname', 
           'gender': 2,
           'idcard': '@id',
-          'part': '春树里',
+          'part': '',
           'method': '@word',
           'time': '@date',
           'description': '@cparagraph',
@@ -33,16 +34,16 @@ class ExpandedDetailRow extends React.Component {
         },
         operatorDetail: {
           'name': '操作员姓名',
-          'tel': '125643234565',
+          'tel': '@tel',
         },
         orgDetail: {
           name: 'ORG',
-          tel: 'ORG123456',
+          tel: '@tel',
         },
         taskStage: 'receiving',
         task_attachment_is_downloaded: false,
-        task_attachment_url: 'https://baidu.com',
-        task_report_url: 'https://weibo.com',
+        task_attachment_url: '',
+        task_report_url: '',
         can_operator_confirm: false,
       },
       // UI
@@ -110,7 +111,7 @@ class ExpandedDetailRow extends React.Component {
   }
 
   receiveTaskBtnClickHandler() {
-    let { currentTaskId: taskId } = this.state.detailData;
+    let taskId = this.props.taskId; // [TODO]
     Modal.confirm({
       title: '确实要领取此任务吗？',
       onOk: () => { //close => {
@@ -160,19 +161,29 @@ class ExpandedDetailRow extends React.Component {
 
     const uploadBtnProps = {
       onChange: ({ file, fileList }) => {
-        this.setState({
-          uploadBtnFileList: fileList.length <= 1 ? fileList : [file],
-        });
+        // let checker = formRules.uploadFile.validator;
+        // checker([], fileList, errors => {
+        //   if(errors.length) {
+        //   } else {
+        //     this.setState({
+        //       uploadBtnFileList: fileList.length <= 1 ? fileList : [file],
+        //     });
+        //   }
+        // });
       },
       beforeUpload: file => {
-        // [TODO] 文件过滤规则
-        if(file.size > 16 * 1024 * 1024) {
+        let errors = formRules.uploadFile.syncValidator([], [file]);
+        if(errors.length) {
           Modal.info({
             title: '选择的文件不符合规范',
-            content: '文件大小不应超过16MB',
+            content: errors.map(e => e.message).join('. \n'),
           });
           this.setState({ uploadBtnFileList: [] });
           return false;
+        } else {
+          this.setState({
+            uploadBtnFileList: [file],
+          });
         }
 
         if(this.state.detailData.task_report_url) {
@@ -182,10 +193,12 @@ class ExpandedDetailRow extends React.Component {
               content: '确定继续上传吗？',
               okText: '继续上传',
               onOk: close => {
+                this.setState({ uploadBtnFileList: [file] });
                 close();
                 resolve();
               },
               onCancel: close => {
+                this.setState({ uploadBtnFileList: [] });
                 reject();
                 close();
               },
@@ -207,7 +220,7 @@ class ExpandedDetailRow extends React.Component {
           this.setState(prevState => ({
             detailData: {
               ...prevState.detailData,
-              task_report_url: data.taskReportUrl,
+              task_report_url: data.task_report_url,
               can_operator_confirm: data.canOperatorConfirm || false,
               taskStage: 'confirming',
             },
@@ -228,7 +241,7 @@ class ExpandedDetailRow extends React.Component {
         onOk: async close => {
           try {
             await apier.fetch('confirmTask', {
-              taskId: this.state.detailData.taskDetail.taskId,
+              taskId: this.props.taskId, // [TODO]
             });
             this.setState(prevState => ({
               detailData: { ...prevState.detailData, taskStage: 'finished' },
@@ -250,7 +263,10 @@ class ExpandedDetailRow extends React.Component {
         <div styleName="box-wrap">
           <Row gutter={12} styleName="section-wrap">
             <Col span={7}>
-              <p styleName="section_title">基本信息{this.props.taskId}</p>
+              <p styleName="section_title">
+                基本信息
+                <small style={{color: 'transparent'}}>{this.props.taskId}</small>
+              </p>
               <table styleName="section_table">
                 <tbody>
                   <tr>
@@ -260,7 +276,7 @@ class ExpandedDetailRow extends React.Component {
                   <tr>
                     <th>性别 / 年龄</th>
                     <td>
-                      {['','男','女'][detailData.taskDetail.gender]}
+                      {['男','女'][detailData.taskDetail.gender]}
                       &nbsp;/&nbsp; 
                       {detailData.taskDetail.age}
                     </td>
@@ -315,79 +331,86 @@ class ExpandedDetailRow extends React.Component {
                   上传成功
                   <span styleName="toggle-stage-btn" onDoubleClick={toggleStage}>😂</span>
                 </DsSteps.DsStep>
+
                 <DsSteps.DsStep title="待领取">
                 {currentStepIndex > 2
                 ? '操作员已领取'
                 : <>
                     ⚠此任务尚未领取 <br />
-                    { info.ident == 'operator' && 
-                    <Button size="small" onClick={this.receiveTaskBtnClickHandler}>
-                      领取任务
-                    </Button>}
+                    {info.ident == 'operator' && 
+                    <Button size="small" onClick={this.receiveTaskBtnClickHandler}>领取任务</Button>}
                   </>}
                 </DsSteps.DsStep>
-                <DsSteps.DsStep title="处理中">
+
+                <DsSteps.DsStep title="处理中" styleName="upload-file-step-block">
                 {currentStepIndex < 3
-                  ? '未开始'
-                  : <>
-                      {this.state.detailData.task_attachment_is_downloaded
-                      ? '✔操作员已下载附件'
-                      : '⚠操作员尚未下载附件'}
-                      <a
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        download={'task_' + this.state.detailData.taskDetail.taskId + '_attchment'}
-                        href={this.state.detailData.task_attachment_url}>
-                        &nbsp;
-                        <Icon type="download"></Icon>
-                      </a>
-                      <br />
-                      {this.state.detailData.task_report_url
-                      ? '✔操作员已上传报告'
-                      : '⚠操作员尚未上传报告'}
-                      {info.ident == 'operator' && currentStepIndex < 5 &&
+                ? '未开始'
+                : <>
+                    {this.state.detailData.task_attachment_is_downloaded
+                    ? '✔操作员已下载附件'
+                    : '⚠操作员尚未下载附件'}
+                    <a
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      download
+                      href={this.state.detailData.task_attachment_url}
+                    >
+                      &nbsp;<Icon type="download" />
+                    </a>
+                    <br />
+
+                    {this.state.detailData.task_report_url
+                    ? '✔操作员已上传报告'
+                    : '⚠操作员尚未上传报告'}
+                    {info.ident == 'operator' && currentStepIndex < 5 &&
+                    <>
+                      <Upload
+                        {...uploadBtnProps}
+                        data={{ taskId: this.props.taskId }}
+                        disabled={this.state.uploadBtnLoading}
+                        showUploadList={false}
+                      > 
+                        <a>&nbsp;<Icon type="upload"></Icon></a>
+                      </Upload>
+                      <Upload
+                        styleName="upload-file-list"
+                        fileList={this.state.uploadBtnFileList}
+                        showUploadList={{ showRemoveIcon: false }}
+                      />
+                    </>}
+                  </>}
+                  <br />
+                  <Popover content={
+                    <>
+                      {(info.ident == 'organization' || info.ident == 'administrator') &&
                       <>
-                        <Upload
-                          {...uploadBtnProps}
-                          data={{ taskId: this.state.detailData.taskDetail.taskId }}
-                          disabled={this.state.uploadBtnLoading}
-                          showUploadList={false}
-                        > 
-                          <a>&nbsp;<Icon type="upload"></Icon></a>
-                        </Upload>
-                        <Upload
-                          styleName="upload-file-list"
-                          fileList={this.state.uploadBtnFileList}
-                          showUploadList={{ showRemoveIcon: false }}
-                        />
-                      </>
-                      }
-                      <br />
-                      <Popover content={
-                        <>
-                          操作员：
-                          {this.state.detailData.operatorDetail.name}
-                          <br />
-                          {this.state.detailData.operatorDetail.tel}
-                          <br />
-                          机构客户：
-                          {this.state.detailData.orgDetail.name}
-                          <br />
-                          {this.state.detailData.orgDetail.tel}
-                        </>
-                      }>
-                        <a>联系方式</a>
-                      </Popover>
+                        操作员：<br />
+                        {this.state.detailData.operatorDetail.name}<br />
+                        {this.state.detailData.operatorDetail.tel}<br />
+                        <br />
+                      </>}
+                      {(info.ident == 'operator' || info.ident == 'administrator') &&
+                      <>
+                        机构客户：<br />
+                        {this.state.detailData.orgDetail.name}<br />
+                        {this.state.detailData.orgDetail.tel}<br />
+                        <br />
+                      </>}
                     </>
-                }
+                  }>
+                    <a>📞联系方式</a>
+                  </Popover>
                 </DsSteps.DsStep>
+
                 <DsSteps.DsStep title="待确认">
-                  {this.state.detailData.task_report_url &&
+                  {this.state.detailData.task_report_url && 
+                  this.state.detailData.task_report_url !== true &&
                   <a
                     target="_blank"
                     rel="noopener noreferrer"
-                    download={'task_' + this.state.detailData.taskDetail.taskId + '_report'}
-                    href={this.state.detailData.task_report_url}>
+                    download
+                    href={this.state.detailData.task_report_url}
+                  >
                     点击下载报告
                   </a>}
                   <br />
@@ -395,12 +418,13 @@ class ExpandedDetailRow extends React.Component {
                   ? '此任务已被确认'
                   : currentStepIndex == 4
                   ? <>
-                    {((info.ident == 'operator' && this.state.detailData.can_operator_confirm)
+                    {(info.ident == 'operator' && this.state.detailData.can_operator_confirm
                     || info.ident == 'organization' || info.ident == 'administrator') &&
                       <Button size="small" onClick={confirmBtnClickHandler}>点击确认</Button>}
                     </>
                   : '' }
                 </DsSteps.DsStep>
+
                 <DsSteps.DsStep title="已完结" />
               </DsSteps>
             );}}

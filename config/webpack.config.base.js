@@ -197,7 +197,10 @@ module.exports = {
     // https://github.com/jmblog/how-to-optimize-momentjs-with-webpack
     // You can remove this if you don't use Moment.js:
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
-    new LodashModuleReplacementPlugin(),
+    // Create smaller Lodash builds by replacing feature sets of modules with
+    // noop, identity, or simpler alternatives.
+    // [NOTICE] 和表单检查不兼容
+    // new LodashModuleReplacementPlugin(),
   ],
   // Some libraries import Node modules but don't use them in the browser.
   // Tell Webpack to provide empty mocks for them so importing them works.

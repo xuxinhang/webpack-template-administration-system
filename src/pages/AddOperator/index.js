@@ -120,6 +120,11 @@ class RawForm extends React.Component {
             )}
             </Form.Item>          
           </Col>
+          <Col span={8}>
+            <Form.Item label="初始密码">
+              <Input value="电话号码后六位" disabled />
+            </Form.Item>          
+          </Col>
         </Row>
         <Form.Item styleName="form-submit-bar">
           {[

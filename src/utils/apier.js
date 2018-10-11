@@ -184,58 +184,58 @@ const statusMsgMap = {
   },
   // 操作员列表
   listOperators: {
-    202: '没有权限，必须是超管账号才行',
-    203: '参数错误，pageSize和pageNumber是否传入以及是否大于零',
+    202: '没有权限', // 必须是超管账号才行
+    203: '参数错误', // pageSize和pageNumber是否传入以及是否大于零
   },
-  // 冻结解冻操作员 @
+  // 冻结解冻操作员
   freezeOperator: {
     202: '没有权限',
-    203: '参数错误，检查传入字段是否正确',
-    204: '找不到对应的账号！',
+    203: '参数错误', // 检查传入字段是否正确
+    204: '找不到对应的账号',
   },
-  // 列出所有机构账户 @
+  // 列出所有机构账户
   listOrganizations: {
-    202: '没有权限，必须是超管账号才行',
-    203: '参数错误，pageSize和pageNumber是否传入以及是否大于零',
+    202: '没有权限',
+    203: '参数错误', // pageSize和pageNumber是否传入以及是否大于零
   },
-  // 冻结解冻机构账户 @
+  // 冻结解冻机构账户
   freezeOrganization: {
     202: '没有权限',
-    203: '参数错误，检查传入字段是否正确',
-    204: '找不到对应的账号！',
+    203: '参数错误', // 检查传入字段是否正确
+    204: '找不到对应的账号',
   },
-  // 任务列表 @
+  // 任务列表
   listTasks: {
-    203: '参数错误，检查一下传入的参数字段',
+    203: '参数错误',
   },
   // 获取任务详情
   taskDetail: {
     202: '该任务不存在',
   },
-  // 领取任务 @
+  // 领取任务
   receiveTask: {
     202: '没有权限',
     203: '该任务不存在',
-    204: 'action字段有误',
+    204: '没有此操作',
   },
-  // 上传报告文件 @ $
+  // 上传报告文件
   uploadTaskReport: {
     202: '没有权限',
     203: '该任务不存在',
-    204: 'action字段有误',
+    204: '没有此操作',
   },
   // 确认任务 @
   confirmTask: {
     202: '没有权限',
     203: '该任务不存在',
-    204: 'action字段有误',
+    204: '没有此操作',
   },
   common: {
-    301: '没有token传入，需要重新登录',
-    302: 'token过期，需要重新登录',
-    303: 'token错误。',
+    301: '尚未登录，请重新登录后重试',
+    302: '登录过期，请重新登录后重试',
+    303: '请尝试重新登录',
     200: '成功',
-  }
+  },
 };
 
 
@@ -256,16 +256,18 @@ const filters = {
       ident: rep.data
              ? identMap[rep.data.ident]
              : 'unknown',
+      // name: rep.data.name,
       expireTime: +rep.data.expire_time || 0, // Timestamp
     }),
-    handler: (resolve, reject, name, input) => {
+    handlerr: (resolve, reject, name, input) => {
       setTimeout(() => {
         resolve({
           stat: 0,
           data: {
             token: 'TEST_TOKEN',
             ident: input.username,
-            expireTime: Date.now() * 1.2,
+            name: input.username,
+            expireTime: ~~(Date.now() * 1.2),
           },
         });
       }, 1800);
@@ -289,7 +291,7 @@ const filters = {
   modifyPassword: {
     name: 'modifyPassword',
     method: 'POST',
-    url: API_SERVER_URL + '/modify_password',
+    url: API_SERVER_URL + '/modifyPassword',
     chop: inp => ({
       prevPwd: inp.prevPwd,
       newPwd: inp.newPwd,
@@ -402,7 +404,7 @@ const filters = {
   freezeOperator: {
     name: 'freezeOperator',
     method: 'POST',
-    url: inp => API_SERVER_URL + '/operator/freeze',
+    url: API_SERVER_URL + '/operator/freeze',
     chop: inp => ({
       operator_id: inp.operatorId,
       action: inp.action,
@@ -485,7 +487,7 @@ const filters = {
       list: Array.isArray(rep.data)
             && rep.data.map(item => taskItemMapper(item, true)),
     }),
-    handler: (resolve, reject, name, input) => {
+    handlerr: (resolve, reject, name, input) => {
       let mocked = Mock.mock({
         data: {
           pageInfo: usefulMockData.pageInfo,
@@ -524,6 +526,7 @@ const filters = {
         task_attachment_url: downloadUrlFilter(rep.data.task_attachment_url),
         task_report_url: downloadUrlFilter(rep.data.task_report_url),
         can_operator_confirm: !!rep.data.can_operator_confirm,
+        task_confirm_by: 'organization',
       };
     },
     handlerr: (resolve, reject, name, input) => {
@@ -584,12 +587,12 @@ const filters = {
     url: inp => API_SERVER_URL + `/tasks/operate/${inp.taskId}?action=process`,
     chop: inp => {
       let fd = new FormData();
-      fd.append('task_report_file', inp.file);
+      fd.append('report_file', inp.file);
       fd.append('task_id', inp.taskId);
       return fd;
     },
     trim: rep => ({
-      task_report_url: downloadUrlFilter(rep.data && rep.data.task_report_url),
+      task_report_url: downloadUrlFilter(rep.data && rep.data.task_report_url) || true,
     }),
     handlerr: (resolve, reject, name, input) => {
       setTimeout(() => resolve({
@@ -654,10 +657,6 @@ export default new CattleBridge({
     });
   },
   stater(result, respData, respStat, filter) {
-    // [TODO]
-    // If token is invalid, then:
-    // loginInfo.exit();
-  
     if (respStat.status >= 300) {
       result(false);
       return {
@@ -674,6 +673,9 @@ export default new CattleBridge({
       };
     } else {
       result(respData.status.code == 200);
+      if([301, 302, 303].indexOf(respData.status.code) !== -1) {
+        loginInfo.exit();
+      }
       return {
         code: respData.status.code || 300,
         msg: respData.status.msg || 'Unknown Error',

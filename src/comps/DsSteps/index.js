@@ -47,7 +47,7 @@ function DsSteps(props) {
 function DsStep(props) {
   let classPrefix = 'ds-step-bar_indicator';
   return (
-    <div className="ds-step-bar_block">
+    <div className={'ds-step-bar_block ' + props.className}>
       <div
         className={`${classPrefix} ${classPrefix}--${props.type}`}
       >

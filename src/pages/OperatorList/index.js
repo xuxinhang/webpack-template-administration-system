@@ -15,12 +15,12 @@ class OperatorList extends React.Component {
     this.state = {
       formState: 0,
       formTip: ['', ''],
-      listData: [{
+      listData: [/* {
         'operatorId': 16,
         'num': 16,
-        'name': '<script>@cname&gt;</script>',
+        'name': '@cname',
         'createdTime': '@date',
-        'tel': '13853321909',
+        'tel': '@tel',
         'password': '@word',
         'taskStatistics': {
           'received': 0,
@@ -29,7 +29,7 @@ class OperatorList extends React.Component {
           'finished': 0,
         },
         'frozen': 1,
-      }],
+      } */],
       pageSize: 10,
       currentPage: 1,
       totalRecord: 100,
@@ -67,7 +67,7 @@ class OperatorList extends React.Component {
     let { recordId, recordName, action, rowIndex } = e.target.dataset;
     let commonProps = {
       title: `你是要将操作员“${recordName}”${['','解冻','冻结'][action]}吗?`,
-      children: ['','账号将可正常使用','他将无法登录系统并进行操作'][action],
+      children: ['', '账号将可正常使用', '他将无法登录系统并进行操作'][action],
       visible: true,
       closable: false,
     };
@@ -181,10 +181,10 @@ class OperatorList extends React.Component {
 
     return (
       <>
-        <PageHeader title="新建操作员账号">
+        <PageHeader title="操作员账号管理">
           <Link to="/admin/addOperator">
             <Button className="button--deep-gray-primary" size="small" type="primary">
-              操作员账号管理
+              新建操作员账号
             </Button>
           </Link>
         </PageHeader>

@@ -84,9 +84,10 @@
     "stylus-loader": "^3.0.2"
   },
   "proxy": {
-    "/api": {
+    "/(api|downloadFile)": {
       "pathRewrite": {
-        "^/api": "/"
+        "^/api": "/",
+        "^/downloadFile": "/downloadFile"
       },
       "targett": "http://192.168.23.1:5000/",
       "target": "http://118.24.183.158/",

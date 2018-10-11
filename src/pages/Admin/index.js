@@ -1,10 +1,10 @@
 import React, { Component, Fragment } from 'react';
-import { Router, Route, HashRouter, Link } from 'react-router-dom';
+import { Route, HashRouter, Link } from 'react-router-dom';
 import { Layout, Menu, Icon, Modal } from 'antd';
-const { Header, Content, Footer, Sider } = Layout;
+const { /* Header, */ Content /* , Footer, Sider */ } = Layout;
 import apier from '@/utils/apier';
-import sty from './Admin.md.sass';
-// import _ from './Admin.css';
+import './Admin.md.sass';
+import withAsyncComponent from '@/utils/asyncComponent';
 
 import { UserCtx } from '@/contexts/contexts.js';
 import { TaskManage } from '@/pages/TaskManage';
@@ -23,18 +23,40 @@ const withTaskManageStatus = ({match}) => (
 );
 
 const pageRoutes = [
-  { path: 'taskManage/:taskStage', component: withTaskManageStatus, access: ['operator', 'administrator', 'organization'] },
-  { path: 'addTask', component: AddTask, access: ['organization'] },
-  { path: 'operatorManage', component: OperatorList, access: ['administrator'] },
-  { path: 'organizationManage', component: OrganizationList, access: ['administrator'] },
-  { path: 'modifyPassword', access: -1, component: ModifyPassword },
-  { path: 'addOrganization', component: AddOrganization, access: ['administrator'] },
-  { path: 'addOperator', component: AddOperator, access: ['administrator'] },
+  {
+    path: 'taskManage/:taskStage',
+    component: withAsyncComponent(withTaskManageStatus),
+    access: ['operator', 'administrator', 'organization'],
+  }, {
+    path: 'addTask',
+    component: withAsyncComponent(() => import(AddTask)),
+    access: ['organization'],
+  }, {
+    path: 'operatorManage',
+    component: withAsyncComponent(() => import(OperatorList)),
+    access: ['administrator'],
+  }, {
+    path: 'organizationManage',
+    component: withAsyncComponent(() => import(OrganizationList)),
+    access: ['administrator'],
+  }, {
+    path: 'modifyPassword',
+    access: -1,
+    component: withAsyncComponent(() => import(ModifyPassword)),
+  }, {
+    path: 'addOrganization',
+    component: withAsyncComponent(() => import(AddOrganization)),
+    access: ['administrator'],
+  }, {
+    path: 'addOperator',
+    component: withAsyncComponent(() => import(AddOperator)),
+    access: ['administrator'],
+  },
 ];
 
 const menuLinks = [
   {
-    name: '数据管理',
+    name: '任务管理',
     menus: [
       { path: 'taskManage/progressing', title: '跟进中', access: ['operator', 'administrator', 'organization'] },
       { path: 'taskManage/finished',  title: '已完结', access: ['operator', 'administrator', 'organization'] },
@@ -44,9 +66,9 @@ const menuLinks = [
     name: '账号管理',
     menus: [
       { path: 'operatorManage', title: '操作员管理', access: ['administrator'] },
-      { path: 'addOperator', title: '添加操作员[Temp]', access: ['administrator'] },
+      // { path: 'addOperator', title: '添加操作员[Temp]', access: ['administrator'] },
       { path: 'organizationManage', title: '机构管理', access: ['administrator'] },
-      { path: 'addOrganization', title: '添加机构账户[Temp]', access: ['administrator'] },
+      // { path: 'addOrganization', title: '添加机构账户[Temp]', access: ['administrator'] },
     ],
   }, {
     name: '操作中心',

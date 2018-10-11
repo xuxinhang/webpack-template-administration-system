@@ -98,73 +98,79 @@ class RawForm extends React.Component {
           <Col span={8}>
             <Form.Item label="姓名">
             {getFieldDecorator('name', {
-              // rules: [
-              //   // formRules.personName,
-              //   { min: 2, max: 30, required: true, message: '请输入合法的姓名' },
-              // ],
+              rules: [
+                formRules.personName,
+              ],
             })(
               <Input />
             )}
-            </Form.Item>          
+            </Form.Item>
           </Col>
           <Col span={8}>
             <Form.Item label="性别">
             {getFieldDecorator('gender', {
+              rules: [{ required: true, message: '请选择性别' }],
             })(
               <Select style={{width: '100%'}} placeholder="点击选择">
                 <Select.Option value={0}>男</Select.Option>
                 <Select.Option value={1}>女</Select.Option>
               </Select>
             )}
-            </Form.Item>          
+            </Form.Item>
           </Col>
           <Col span={8}>
             <Form.Item label="身份证">
             {getFieldDecorator('idcard', {
               rules: [
-                // formRules.idcard,
+                formRules.idcard,
                 { required: true, message: '需输入证件号' },
               ],
             })(
               <Input />
-            )} 
-            </Form.Item>          
+            )}
+            </Form.Item>
           </Col>
         </Row>
-        <div className="line-decorated-text" styleName="form-section-title">测量情况</div>  
+        <div className="line-decorated-text" styleName="form-section-title">测量情况</div>
         <Row gutter={36}>
           <Col span={8}>
             <Form.Item label="测量部位">
             {getFieldDecorator('part', {
-              // rules: [
-              //   { max: 40, message: '内容过长' },
-              //   { required: true, message: '必填' },
-              // ],
+              rules: [
+                { max: 40, message: '内容过长, 不超过40字' },
+                { required: true, message: '必填' },
+              ],
             })(
               <Input />
             )}
-            </Form.Item>          
+            </Form.Item>
           </Col>
           <Col span={8}>
             <Form.Item label="测量方法">
             {getFieldDecorator('method', {
-              // rules: [
-              //   { max: 40, message: '内容过长' },
-              //   { required: true, message: '必填' },
-              // ],
+              rules: [
+                { max: 40, message: '内容过长, 不超过40字' },
+                { required: true, message: '必填' },
+              ],
             })(
               <Input />
             )}
-            </Form.Item>          
+            </Form.Item>
           </Col>
           <Col span={8}>
             <Form.Item label="测量时间">
             {getFieldDecorator('time', {
-              rules: [{ required: true, message: '必需填写检测日期' }],
+              rules: [
+                { required: true, message: '必需填写检测日期' }
+              ],
             })(
-              <DatePicker style={{ width: '100%' }} placeholder="点击选择日期" format="YYYY/MM/DD" />
-            )} 
-            </Form.Item>          
+              <DatePicker
+                style={{ width: '100%' }}
+                placeholder="点击选择日期"
+                format="YYYY/MM/DD"
+              />
+            )}
+            </Form.Item>
           </Col>
         </Row>
         <Row>
@@ -172,16 +178,16 @@ class RawForm extends React.Component {
             <Form.Item label="测量情况概述">
             {getFieldDecorator('description', {
               rules: [
-                // { max: 6, message: '内容请控制在600字以内' },
-                // { required: true, message: '必需填写详细描述' },
-              ], // [TODO]
+                { max: 600, message: '内容请控制在600字以内' },
+                { required: true, message: '必需填写情况概述' },
+              ],
             })(
-              <TextArea autosize={{ minRows: 5 }} placeholder="选填，600字以内" />
-            )} 
-            </Form.Item>          
+              <TextArea autosize={{ minRows: 5 }} placeholder="600字以内" />
+            )}
+            </Form.Item>
           </Col>
         </Row>
-        <div className="line-decorated-text" styleName="form-section-title">附件上传</div>  
+        <div className="line-decorated-text" styleName="form-section-title">附件上传</div>
         <Row>
           <Col span={9} styleName="form-row">
             <Form.Item label="">
@@ -193,13 +199,13 @@ class RawForm extends React.Component {
                 },
                 initialValue: [],
                 rules: [
-                  // formRules.uploadFile,
+                  formRules.uploadFile,
                   { required: true, message: '必须上传附件' },
                 ],
               })(
                 <Upload.Dragger
                   name="task_upload"
-                  styleName="form-upload-box"
+                  styleName="form-uploader"
                   listType="picture"
                   showUploadList={false}
                   beforeUpload={() => false}
@@ -209,7 +215,7 @@ class RawForm extends React.Component {
                     <p className="ant-upload-drag-icon">
                       <Icon type={value[0] ? 'file' : 'cloud-upload'} />
                     </p>
-                    <p className="ant-upload-text">
+                    <p className="ant-upload-text" styleName="form-uploader-filename">
                       {value[0]
                       ? `${value[0].name} (${Math.round(value[0].size/1024/1024*100)/100}MB)`
                       : '点击上传附件'}
@@ -220,7 +226,7 @@ class RawForm extends React.Component {
                   </>))(getFieldValue('attachments'))}
                 </Upload.Dragger>
               )}
-            </Form.Item>          
+            </Form.Item>
           </Col>
         </Row>
         <Form.Item styleName="form-submit-bar">
