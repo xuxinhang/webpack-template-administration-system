@@ -21,6 +21,6 @@ yarn-debug.log*
 yarn-error.log*
 
 # editor
-/*.sublime*
+*.sublime*
 
 

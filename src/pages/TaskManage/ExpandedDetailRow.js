@@ -436,4 +436,6 @@ class ExpandedDetailRow extends React.Component {
   }
 }
 
+
+export default ExpandedDetailRow;
 export { ExpandedDetailRow };

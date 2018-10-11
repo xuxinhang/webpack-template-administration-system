@@ -135,4 +135,6 @@ class InitialForm extends Component {
 
 const WrappedForm = Form.create({})(InitialForm);
 
+
+export default ModifyPassword;
 export { ModifyPassword };

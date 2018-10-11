@@ -207,4 +207,5 @@ class RawForm extends React.Component {
 const WrappedForm = Form.create()(RawForm);
 
 
+export default AddOrganization;
 export { AddOrganization };

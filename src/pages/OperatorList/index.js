@@ -234,5 +234,6 @@ class OperatorList extends React.Component {
 }
 
 
+export default OperatorList;
 export { OperatorList };
 

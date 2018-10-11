@@ -29,6 +29,7 @@
       "decoratorsBeforeExport": false,
     }],
     ["@babel/plugin-transform-runtime"],
-    ["lodash"]
+    ["lodash"],
+    ["@babel/plugin-syntax-dynamic-import"]
   ]
 }

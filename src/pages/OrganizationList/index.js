@@ -194,5 +194,6 @@ class OrganizationList extends React.Component {
 }
 
 
+export default OrganizationList;
 export { OrganizationList };
 

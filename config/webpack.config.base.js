@@ -171,6 +171,32 @@ module.exports = {
       },
     ],
   },
+  optimization: {
+    splitChunks: {
+      chunks: 'all',
+      minSize: 30000,
+      minChunks: 1,
+      maxAsyncRequests: 5,
+      maxInitialRequests: 3,
+      name: true,
+      cacheGroups: {
+        default: {
+          minChunks: 2,
+          priority: -20,
+          reuseExistingChunk: true,
+        },
+        // antd: {
+        //   test: /[\\/]node_modules[\\/]antd[\\/]/,
+        //   priority: -9,
+        // },
+        vendors: {
+          test: /[\\/]node_modules[\\/]/,
+          priority: -10,
+          reuseExistingChunk: true,
+        },
+      },
+    },
+  },
   plugins: [
     // Makes some environment variables available in index.html.
     // The public URL is available as %PUBLIC_URL% in index.html, e.g.:

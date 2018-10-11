@@ -123,4 +123,5 @@ class NormalLoginForm extends React.Component {
 const WrappedNormalLoginForm = Form.create()(NormalLoginForm);
 
 
+export default LoginPage;
 export { LoginPage, WrappedNormalLoginForm as LoginForm };

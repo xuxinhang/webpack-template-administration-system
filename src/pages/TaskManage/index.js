@@ -186,4 +186,5 @@ class TaskManage extends React.Component {
 }
 
 
+export default TaskManage; 
 export { TaskManage };

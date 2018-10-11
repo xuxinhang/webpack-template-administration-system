@@ -3,53 +3,47 @@ import { Route, HashRouter, Link } from 'react-router-dom';
 import { Layout, Menu, Icon, Modal } from 'antd';
 const { /* Header, */ Content /* , Footer, Sider */ } = Layout;
 import apier from '@/utils/apier';
-import './Admin.md.sass';
+import sty from './Admin.md.sass';
 import withAsyncComponent from '@/utils/asyncComponent';
 
 import { UserCtx } from '@/contexts/contexts.js';
-import { TaskManage } from '@/pages/TaskManage';
-import { AddTask } from '@/pages/AddTask';
-import { ModifyPassword } from '@/pages/ModifyPassword';
-import { AddOrganization } from '@/pages/AddOrganization';
-import { AddOperator } from '@/pages/AddOperator';
-import { OperatorList } from '@/pages/OperatorList';
-import { OrganizationList } from '@/pages/OrganizationList';
 
 // Routes for different identities
-const withTaskManageStatus = ({match}) => (
-  <TaskManage defaultFilters={{
+const WithTaskManageStatus = ({match}) => {
+  const WithAsyncTaskManage = withAsyncComponent(() => import('@/pages/TaskManage'));
+  return (<WithAsyncTaskManage defaultFilters={{
     taskStage: match.params.taskStage,
-  }} />
-);
+  }} />);
+};
 
 const pageRoutes = [
   {
     path: 'taskManage/:taskStage',
-    component: withAsyncComponent(withTaskManageStatus),
+    component: WithTaskManageStatus, // An async component, too.
     access: ['operator', 'administrator', 'organization'],
   }, {
     path: 'addTask',
-    component: withAsyncComponent(() => import(AddTask)),
+    component: withAsyncComponent(() => import('@/pages/AddTask')),
     access: ['organization'],
   }, {
     path: 'operatorManage',
-    component: withAsyncComponent(() => import(OperatorList)),
+    component: withAsyncComponent(() => import('@/pages/OperatorList')),
     access: ['administrator'],
   }, {
     path: 'organizationManage',
-    component: withAsyncComponent(() => import(OrganizationList)),
+    component: withAsyncComponent(() => import('@/pages/OrganizationList')),
     access: ['administrator'],
   }, {
     path: 'modifyPassword',
     access: -1,
-    component: withAsyncComponent(() => import(ModifyPassword)),
+    component: withAsyncComponent(() => import('@/pages/ModifyPassword')),
   }, {
     path: 'addOrganization',
-    component: withAsyncComponent(() => import(AddOrganization)),
+    component: withAsyncComponent(() => import('@/pages/AddOrganization')),
     access: ['administrator'],
   }, {
     path: 'addOperator',
-    component: withAsyncComponent(() => import(AddOperator)),
+    component: withAsyncComponent(() => import('@/pages/AddOperator')),
     access: ['administrator'],
   },
 ];
@@ -66,8 +60,8 @@ const menuLinks = [
     name: '账号管理',
     menus: [
       { path: 'operatorManage', title: '操作员管理', access: ['administrator'] },
-      // { path: 'addOperator', title: '添加操作员[Temp]', access: ['administrator'] },
       { path: 'organizationManage', title: '机构管理', access: ['administrator'] },
+      // { path: 'addOperator', title: '添加操作员[Temp]', access: ['administrator'] },
       // { path: 'addOrganization', title: '添加机构账户[Temp]', access: ['administrator'] },
     ],
   }, {

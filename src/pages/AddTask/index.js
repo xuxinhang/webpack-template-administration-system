@@ -245,4 +245,5 @@ const WrappedForm = Form.create()(RawForm);
 
 
 
+export default AddTask;
 export { AddTask };
