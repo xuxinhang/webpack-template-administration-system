@@ -125,8 +125,7 @@ class TaskManage extends React.Component {
         <PageHeader title="任务管理"></PageHeader>
         {/* <ExpandedDetailRow /> */}
         <Table
-          className="ds-ant-table-wrapper"
-          styleName="table-task-list"
+          styleName="table-task-list ds-ant-table-wrapper"
           dataSource={this.state.tableData}
           rowClassName="ds-table-row"
           rowKey="taskId"
@@ -157,6 +156,7 @@ class TaskManage extends React.Component {
           <Column title="测量部位" dataIndex="part" />
           <Column title="任务状态" dataIndex="taskStage" render={text => taskStageMap[text] || ''} />
           <Column title="操作" key="op" align="right"
+            className="ds-table-last-column"
             render={(text, record, index) => (
               <>
                 {/*this.state.tableExpandedRowKeys.includes(record.taskId)

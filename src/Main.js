@@ -24,7 +24,6 @@ class Main extends Component {
     this.updateLoginState = (info, toStore = true) => {
       this.setState(prevState => {
         let nv = {...prevState.userLoginInfo, ...info};
-        // console.log('new login info', info);
         toStore && this.storeLoginInfo(nv);
         let newState = {
           actualLoginInfo: {...nv},

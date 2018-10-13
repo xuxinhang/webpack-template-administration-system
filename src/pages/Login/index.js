@@ -46,7 +46,6 @@ class NormalLoginForm extends React.Component {
               ident: data.ident,
               expireTime: data.expireTime,
             });
-            console.log(result);
             if(result && result[0]) {
               this.props.form.resetFields(['password']);
               message.success(`${values.username}，欢迎回到系统！`);

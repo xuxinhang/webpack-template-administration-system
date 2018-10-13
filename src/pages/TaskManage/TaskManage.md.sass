@@ -18,6 +18,7 @@
     height: auto
     width: auto
     padding: 0 7px
+    margin-right: 0 !important
     line-height: 1.5
     border-radius: 4px
   \:global(.ant-table-row-expanded)
@@ -34,3 +35,16 @@
     &::after
       @extend %expand-arrow
       transform: matrix($matrix-right)
+
+
+.ds-ant-table-wrapper
+  \:global(.ant-table-small)
+    border-style: none !important
+    border-bottom-style: solid !important
+    border-radius: 0 !important
+  \:global(.ant-table-body)
+    margin: 0 !important
+  \:global(.ant-table-pagination)
+    margin-right: 1em !important
+
+

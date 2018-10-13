@@ -61,11 +61,14 @@
     "react-scripts": "1.1.5",
     "resolve": "1.8.1",
     "sass-loader": "^7.1.0",
+    "stats-webpack-plugin": "^0.7.0",
     "style-loader": "0.23.0",
     "sugarss": "^2.0.0",
     "sw-precache-webpack-plugin": "0.11.5",
+    "uglifyjs-webpack-plugin": "^2.0.1",
     "url-loader": "1.1.1",
     "webpack": "4.20.2",
+    "webpack-bundle-analyzer": "^3.0.2",
     "webpack-dev-server": "3.1.9",
     "webpack-manifest-plugin": "2.0.4",
     "webpack-merge": "^4.1.4",
@@ -87,7 +90,7 @@
   "proxy": {
     "/(api|downloadFile)": {
       "pathRewrite": {
-        "^/api": "/",
+        "^/api": "/api",
         "^/downloadFile": "/downloadFile"
       },
       "targett": "http://192.168.23.1:5000/",

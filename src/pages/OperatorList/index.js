@@ -183,7 +183,9 @@ class OperatorList extends React.Component {
       <>
         <PageHeader title="操作员账号管理">
           <Link to="/admin/addOperator">
-            <Button className="button--deep-gray-primary" size="small" type="primary">
+            <Button size="small" type="primary"
+              className="button--deep-gray-primary ds-button-round-corner"
+            >
               新建操作员账号
             </Button>
           </Link>
@@ -197,7 +199,7 @@ class OperatorList extends React.Component {
           pagination={paginationProps}
           loading={this.state.tableLoading}
         >
-          <Column title="编号" dataIndex="num" align="right" width={60}/>
+          <Column title="编号" dataIndex="num" width={60} className="ds-table-first-column" />
           <Column title="姓名" dataIndex="name" />
           <Column title="创建时间" dataIndex="createdTime" />
           <Column title="账号" dataIndex="tel" />
@@ -212,7 +214,7 @@ class OperatorList extends React.Component {
             render={(text, record, index) => (
               <>
                 <Button
-                  size="small" ghost
+                  className="ds-button-round-corner" ghost size="small"
                   type={['','danger','primary'][record.frozen]}
                   data-record-id={record.operatorId}
                   data-record-name={record.name}

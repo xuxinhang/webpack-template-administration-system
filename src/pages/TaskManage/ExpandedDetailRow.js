@@ -71,11 +71,9 @@ class ExpandedDetailRow extends React.Component {
       // Do Nothing
     }
 
-
-
     // console.log(prevProps, this.props);
-    // // let prevTaskId = prevProps.taskId;
-    // // let prevTaskIdInState = prevState.detailData.taskDetail.taskId;
+    // let prevTaskId = prevProps.taskId;
+    // let prevTaskIdInState = prevState.detailData.taskDetail.taskId;
     // let prevTaskIdInState = prevState.currentTaskId;
     // let newTaskId = this.props.taskId;
     // if(prevTaskIdInState !== newTaskId && this.props.active) {
@@ -84,7 +82,6 @@ class ExpandedDetailRow extends React.Component {
     //     this.fetchDetailData({ taskId: newTaskId });
     //   }
     // }
-
   }
 
   async fetchDetailData({ taskId }) {

@@ -14,7 +14,7 @@ function retrieveLoginInfo() {
   if(stored) {
     try {
       let info = { ...defaultLoginInfo, ...JSON.parse(stored) };
-      console.log(info);
+      process.env.NODE_ENV === 'development' && console.log(info);
       if(checkExpireTime(info) || !info.token) {
         exitLogin();
         return {...defaultLoginInfo};
@@ -40,7 +40,6 @@ function exitLogin() {
 let broadcastList = [];
 
 function broadcastLoginInfo(info) {
-  // console.log(broadcastList);
   broadcastList.forEach(curt => {
     curt(info);
   });

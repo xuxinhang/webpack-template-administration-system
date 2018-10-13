@@ -15,6 +15,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
 const getClientEnvironment = require('./env');
 const ManifestPlugin = require('webpack-manifest-plugin');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin');
 const LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
 const paths = require('./paths');
@@ -181,7 +182,6 @@ module.exports = {
       name: true,
       cacheGroups: {
         default: {
-          minChunks: 2,
           priority: -20,
           reuseExistingChunk: true,
         },
@@ -227,6 +227,7 @@ module.exports = {
     // noop, identity, or simpler alternatives.
     // [NOTICE] 和表单检查不兼容
     // new LodashModuleReplacementPlugin(),
+    new BundleAnalyzerPlugin(),
   ],
   // Some libraries import Node modules but don't use them in the browser.
   // Tell Webpack to provide empty mocks for them so importing them works.
@@ -237,6 +238,8 @@ module.exports = {
     tls: 'empty',
     child_process: 'empty',
   },
+  // stat.json file to analyze
+  profile: true,
   // Turn off performance hints during development because we don't do any
   // splitting or minification in interest of speed. These warnings become
   // cumbersome.

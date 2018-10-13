@@ -626,7 +626,7 @@ const filters = {
 
 
 export default new CattleBridge({
-  debug: (process.env.NODE_ENV == 'development'),
+  debug: (process.env.NODE_ENV === 'development'),
   filters,
   gtrim(rep) {
     if(!(rep && rep.status)) {

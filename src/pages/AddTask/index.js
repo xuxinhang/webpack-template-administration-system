@@ -100,6 +100,7 @@ class RawForm extends React.Component {
             {getFieldDecorator('name', {
               rules: [
                 formRules.personName,
+                { required: true, message: '请输入姓名' },
               ],
             })(
               <Input />

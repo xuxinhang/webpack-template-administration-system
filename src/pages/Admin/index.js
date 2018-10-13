@@ -82,11 +82,6 @@ class Admin extends Component {
     this.logoutClickHandler = this.logoutClickHandler.bind(this);
   }
 
-  componentDidMount() {
-    // this.paginationChangeHandler(1, 10);
-    // console.log('admin componentDidMount');
-  }
-
   logoutClickHandler(infoUpdater) {
     return () => {
       this.setState({logoutLoading: 1});
@@ -100,8 +95,7 @@ class Admin extends Component {
   }
 
   render() {
-    // console.log(this.props);
-    return (
+    return(
       <div styleName="sty.layout-frame">
         <div styleName="sty.layout-sider-wrap">
           <div styleName="sty.layout-sider">

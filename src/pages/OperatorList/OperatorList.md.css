@@ -12,4 +12,7 @@
   margin: 0 !important;
 }
 
+.ds-ant-table-wrapper :global(.ant-table-pagination) {
+  margin-right: 1em !important;
+}
 

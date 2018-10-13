@@ -1,7 +1,6 @@
 # Browsers that we support
 
->1%
+>3%
 last 4 versions
 Firefox ESR
-not ie < 9
 IE 10

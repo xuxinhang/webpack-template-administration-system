@@ -89,7 +89,9 @@ class RawForm extends React.Component {
 
     return (
       <Form onSubmit={this.submitHandler}>
-        <div className="line-decorated-text" styleName="form-section-title">基本信息</div>
+        <div className="line-decorated-text" styleName="form-section-title">
+          基本信息<small>（必填）</small>
+        </div>
         <Row gutter={36}>
           <Col span={8}>
             <Form.Item label="姓名">
@@ -164,7 +166,9 @@ class RawForm extends React.Component {
             </Form.Item>
           </Col>
         </Row>
-        <div className="line-decorated-text" styleName="form-section-title">更多信息</div>
+        <div className="line-decorated-text" styleName="form-section-title">
+          更多信息<small>（非必填）</small>
+        </div>
         <Row gutter={36}>
           <Col span={8}>
             <Form.Item label="身份证">
@@ -187,7 +191,7 @@ class RawForm extends React.Component {
                 { max: 80, message: '内容请控制在80字以内' },
               ],
             })(
-              <TextArea autosize={{ minRows: 1 }} placeholder="[选填] 80字以内" />
+              <TextArea autosize={{ minRows: 1 }} placeholder="80字以内" />
             )}
             </Form.Item>
           </Col>

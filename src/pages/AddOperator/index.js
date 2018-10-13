@@ -8,7 +8,6 @@ import formRules from '@/utils/commonFormRules.js';
 
 import sty from './AddOperator.md.sass';
 // import '../../styles/common.sass';
-// console.log(sty);
 
 class AddOperator extends React.Component {
   constructor(props) {
