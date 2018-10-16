@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Router } from 'react-router';
-import { Form, Input, Button, Alert } from 'antd';
+import { Form, Input, Button, Alert, Modal } from 'antd';
 import { PageHeader } from '@/comps/PageHeader';
 import apier from '@/utils/apier.js';
 
@@ -52,8 +52,9 @@ class InitialForm extends Component {
       .then(() => {
         this.setState({
           formLoading: 2,
-          formResult: ['success', '密码修改成功！下一次请使用新密码登录系统。'],
+          formResult: ['success', '密码修改成功！'],
         });
+        Modal.info({ title: '密码修改成功！', content: '下一次请使用新密码登录系统。' });
       })
       .catch(({stat}) => {
         this.setState({

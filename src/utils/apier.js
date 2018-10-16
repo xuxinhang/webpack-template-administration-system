@@ -79,7 +79,7 @@ const objectMapper = (keyMap) => {
 
 const operatorItemMapper = objectMapper([
   ['operatorId', 'operator_id'],
-  ['num', 'bianhao'],
+  ['num', 'index'],
   ['name', 'name'],
   ['createdTime', 'created_time'],
   ['tel', 'tel'],
@@ -93,7 +93,7 @@ const organizationItemMapper = objectMapper([
   ['gender', 'gender', v => genderMap[v], v => genderMap[v]],
   ['idcard', 'idcard'],
   ['organization'],
-  ['num', 'bianhao'],
+  ['num', 'index'],
   ['name', 'name'],
   ['createdTime', 'created_time'],
   ['tel', 'tel'],
@@ -125,7 +125,7 @@ const taskStageMap = {
 
 const taskItemMapper = objectMapper([
   ['taskId', 'task_id'],
-  ['num', 'bianhao'],
+  ['num', 'index'],
   ['name', 'name'],
   ['gender', 'gender', v => genderMap[v], v => genderMap[v]],
   ['createdTime', 'created_time'],

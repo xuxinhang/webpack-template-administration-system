@@ -52,15 +52,15 @@ const menuLinks = [
   {
     name: '任务管理',
     menus: [
+      { path: 'taskManage/receiving',    title: '未领取', access: ['operator', 'administrator', 'organization'] },
       { path: 'taskManage/progressing', title: '跟进中', access: ['operator', 'administrator', 'organization'] },
       { path: 'taskManage/finished',  title: '已完结', access: ['operator', 'administrator', 'organization'] },
-      { path: 'taskManage/receiving',    title: '未领取', access: ['operator', 'administrator', 'organization'] },
     ]
   }, {
     name: '账号管理',
     menus: [
       { path: 'operatorManage', title: '操作员管理', access: ['administrator'] },
-      { path: 'organizationManage', title: '机构管理', access: ['administrator'] },
+      { path: 'organizationManage', title: '机构客户管理', access: ['administrator'] },
       // { path: 'addOperator', title: '添加操作员[Temp]', access: ['administrator'] },
       // { path: 'addOrganization', title: '添加机构账户[Temp]', access: ['administrator'] },
     ],
@@ -100,7 +100,7 @@ class Admin extends Component {
         <div styleName="sty.layout-sider-wrap">
           <div styleName="sty.layout-sider">
             <div styleName="sty.layout-sider_top">
-              <em>Boby Scan</em>
+              <em styleName="sty.logo-wrap">Body Scan</em>
             </div>
             <UserCtx.Consumer>
             {info =>
