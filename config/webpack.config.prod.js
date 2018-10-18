@@ -190,6 +190,7 @@ module.exports = merge.smart(baseConfig, {
           // Pending further investigation:
           // https://github.com/mishoo/UglifyJS2/issues/2011
           comparisons: false,
+          dead_code: true,
         },
         mangle: {
           // safari10: true,

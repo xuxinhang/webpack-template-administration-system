@@ -75,6 +75,8 @@ class Main extends Component {
       useLoginModal: false,
       actualLoginInfo: {},
     };
+    this.state.useLoginModal = this.state.userLoginInfo.token? true: false;
+    this.state.actualLoginInfo = {...this.state.userLoginInfo};
 
   }
 

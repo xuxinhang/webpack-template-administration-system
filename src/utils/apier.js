@@ -1,55 +1,10 @@
 import CattleBridge from 'cattle-bridge';
 import axios from 'axios';
-import Mock from 'mockjs';
 import loginInfo from '@/utils/loginInfoStorage.js';
 import _ from 'lodash';
 
-// mock data
-const usefulMockData = {
-  pageInfo: { totalPage: 100, totalRecord: 12694 },
-  okStat: { code: 200, msg: 'OK' },
-  failStat: { code: 400, frimsg: 'Some Errors Occured.' },
-};
 
-const genderMap = {
-  0: 'male',
-  1: 'female',
-  male: 0,
-  female: 1,
-};
-
-const processTimeString = raw => String(raw).replace(/-/g, '/');
-
-const covertQueryString = obj => 
-  Object.keys(obj).map(k => k + '=' + obj[k]).join('&');
-
-const processPagination = raw => ({
-  pageNumber: raw.pageNumber,
-  pageSize: raw.pageSize,
-});
-
-const processPageInfo = raw => ({
-  totalPage: raw.total_page,
-  totalRecord: raw.total_record,
-});
-
-const downloadUrlFilter = raw => {
-  if(typeof raw !== String) return raw;
-  if(/^((http|ftp|ftps|https):\/\/|\/\/|\/)/.test(raw)){
-    return raw;
-    // [TODO] 同源策略
-    // try {
-    //   let url = new URL(raw);
-    //   if(url.domain === window.location.domain) {
-    //     return raw;
-    //   }
-    // } catch() {
-    //   return false;
-    // }
-  }
-  return false;
-};
-
+// 将 Object 的键名做映射
 const objectMapper = (keyMap) => {
   if(!Array.isArray(keyMap)) {
     throw new Error('keyMap is expected to be an array');
@@ -77,6 +32,50 @@ const objectMapper = (keyMap) => {
   };
 };
 
+const genderMap = {
+  0: 'male',
+  1: 'female',
+  male: 0,
+  female: 1,
+};
+
+// 转换时间字符串为 YYYY/MM/DD 的格式（后台 API 的要求）
+const processTimeString = raw => String(raw).replace(/-/g, '/');
+
+// Covert query string
+// const covertQueryString = obj => {
+// return Object.keys(obj).map(k => k + '=' + obj[k]).join('&');
+// };
+
+// 处理分页信息
+const processPagination = raw => ({
+  pageNumber: raw.pageNumber,
+  pageSize: raw.pageSize,
+});
+const processPageInfo = raw => ({
+  totalPage: raw.total_page,
+  totalRecord: raw.total_record,
+});
+
+// 对 URL 做过滤，防 XSS
+const downloadUrlFilter = raw => {
+  if(typeof raw !== String) return raw;
+  if(/^((http|ftp|ftps|https):\/\/|\/\/|\/)/.test(raw)){
+    return raw;
+    // [TODO] 同源策略
+    // try {
+    //   let url = new URL(raw);
+    //   if(url.domain === window.location.domain) {
+    //     return raw;
+    //   }
+    // } catch() {
+    //   return false;
+    // }
+  }
+  return false;
+};
+
+// 下面都是一些具体的键名的映射
 const operatorItemMapper = objectMapper([
   ['operatorId', 'operator_id'],
   ['num', 'index'],
@@ -102,13 +101,6 @@ const organizationItemMapper = objectMapper([
   ['email', 'email'],
   ['taskNumber', 'taskNumber'],
   ['frozen', 'frozen', v => v-1, v => [2,1][v]],
-]);
-
-const taskStageMapper = objectMapper([
-  ['receiving', 0],
-  ['processing', 1],
-  ['confirming', 2],
-  ['finished', 3],
 ]);
 
 const taskStageMap = {
@@ -147,7 +139,7 @@ const identMap = {
   2: 'organization', 
 };
 
-
+// API状态码和对应的友好的提示消息
 const statusMsgMap = {
   // 登录 @
   login: {
@@ -238,7 +230,6 @@ const statusMsgMap = {
   },
 };
 
-
 const API_SERVER_URL = '/api';
 
 const filters = {
@@ -259,33 +250,12 @@ const filters = {
       // name: rep.data.name,
       expireTime: +rep.data.expire_time || 0, // Timestamp
     }),
-    handlerr: (resolve, reject, name, input) => {
-      setTimeout(() => {
-        resolve({
-          stat: 0,
-          data: {
-            token: 'TEST_TOKEN',
-            ident: input.username,
-            name: input.username,
-            expireTime: ~~(Date.now() * 1.2),
-          },
-        });
-      }, 1800);
-    },
   },
   // 登出 @
   logout: {
     name: 'logout',
     method: 'POST',
     url: API_SERVER_URL + '/logout',
-    handlerr: (resolve, reject, name, input) => {
-      setTimeout(() => {
-        resolve({
-          stat: 0,
-          data: {},
-        });
-      }, 1800);
-    },
   },
   // 修改密码 @
   modifyPassword: {
@@ -296,14 +266,6 @@ const filters = {
       prevPwd: inp.prevPwd,
       newPwd: inp.newPwd,
     }),
-    handlerr: (resolve, reject, name, input) => {
-      setTimeout(() => {
-        (input.prevPwd.length == 1 ? reject : resolve)({
-          stat: { frimsg: '旧密码输入错误' },
-          data: {},
-        });
-      }, 1000);
-    },
   },
   // 添加任务 (这里的实现不优雅)
   addItem: {
@@ -318,14 +280,6 @@ const filters = {
       return fd;
     },
     trim: rep => taskItemMapper(rep.data, true),
-    handlerr: (resolve, reject, name, input) => {
-      setTimeout(() => {
-        (input.gender ? resolve : reject)({
-          stat: { code: 23, frimsg: '这里是友好的错误信息' },
-          data: null,
-        });
-      }, 600);
-    },
   },
   // 添加机构账号 @
   addOrganization: {
@@ -334,14 +288,6 @@ const filters = {
     url: API_SERVER_URL + '/organization/add',
     chop: inp => organizationItemMapper(inp, false),
     trim: rep => organizationItemMapper(rep.data, true),
-    handlerr: (resolve, reject, name, input) => {
-      setTimeout(() => {
-        (input.gender ? resolve : reject)({
-          stat: { code: 23, frimsg: '这里是友好的错误信息' },
-          data: null,
-        });
-      }, 1200);
-    },
   },
   // 添加操作员 @
   addOperator: {
@@ -350,14 +296,6 @@ const filters = {
     url: API_SERVER_URL + '/operator/add',
     chop: inp => operatorItemMapper(inp, false),
     trim: rep => operatorItemMapper(rep.data, true),
-    handlerr: (resolve, reject, name, input) => {
-      setTimeout(() => {
-        (input.name.length % 2 ? resolve : reject)({
-          stat: { code: 23, frimsg: '这里是友好的错误信息' },
-          data: null,
-        });
-      }, 1200);
-    },
   },
   // 操作员列表 @
   listOperators: {
@@ -375,30 +313,6 @@ const filters = {
           taskStatistics: {...item.task_statistics},
         })),
     }),
-    handlerr: (resolve, reject, name, input) => {
-      let mocked = Mock.mock({
-        data: {
-          pageInfo: usefulMockData.pageInfo,
-          [`list|${input.pagination.pageSize}`]: [{
-            'operatorId|+1': 16,
-            'num|+1': 16,
-            'name': '@cname',
-            'createdTime': '@date',
-            'tel': '13853321909',
-            'password': '@word',
-            'taskStatistics': {
-              'received|2-99': 0,
-              'processing|2-99': 0,
-              'confirming|2-99': 0,
-              'finished|2-99': 0,
-            },
-            'frozen|1': [2, 1],
-          }],
-        },
-        stat: usefulMockData.okStat,
-      });
-      setTimeout(() => resolve(mocked), 1230);
-    }
   },
   // 冻结解冻操作员 @
   freezeOperator: {
@@ -409,15 +323,6 @@ const filters = {
       operator_id: inp.operatorId,
       action: inp.action,
     }),
-    handlerr: (resolve, reject, name, input) => {
-      setTimeout(() => {
-        if(input.operator_id % 2) {
-          resolve({stat: usefulMockData.okStat});
-        } else {
-          reject({stat: usefulMockData.failStat});
-        }
-      }, 2230);
-    },
   },
   // 列出所有机构账户 @
   listOrganizations: {
@@ -432,27 +337,6 @@ const filters = {
       list: Array.isArray(rep.data)
             && rep.data.map(item => organizationItemMapper(item, true)),
     }),
-    handlerr: (resolve, reject, name, input) => {
-      let mocked = Mock.mock({
-        data: {
-          pageInfo: usefulMockData.pageInfo,
-          [`list|${input.pagination.pageSize}`]: [{
-            'orgId|+1': 16,
-            'num|+1': 16,
-            'name': '@cname',
-            'createdTime': '@date',
-            'tel': '13853321909',
-            'password': '@word',
-            'belong': '法医中心',
-            'email': 'we@we.com',
-            'taskNumber|25-299': 0,
-            'frozen|1': [2, 1],
-          }],
-        },
-        stat: usefulMockData.okStat,
-      });
-      setTimeout(() => resolve(mocked), 1230);
-    }
   },
   // 冻结解冻机构账户 @
   freezeOrganization: {
@@ -463,15 +347,6 @@ const filters = {
       org_id: inp.orgId,
       action: inp.action,
     }),
-    handlerr: (resolve, reject, name, input) => {
-      setTimeout(() => {
-        if(input.org_id % 2) {
-          resolve({stat: usefulMockData.okStat});
-        } else {
-          reject({stat: usefulMockData.failStat});
-        }
-      }, 1230);
-    },
   },
   // 任务列表 @
   listTasks: {
@@ -487,29 +362,6 @@ const filters = {
       list: Array.isArray(rep.data)
             && rep.data.map(item => taskItemMapper(item, true)),
     }),
-    handlerr: (resolve, reject, name, input) => {
-      let mocked = Mock.mock({
-        data: {
-          pageInfo: usefulMockData.pageInfo,
-          [`list|${input.pagination.pageSize}`]: [{
-            'taskId|+1': input.pagination.pageNumber * 100,
-            'num|+1': input.pagination.pageNumber * 100,
-            'name': '@cname',
-            'gender|1': [2, 1],
-            'createdTime': '@date',
-            'orgName': '@cname',
-            'operatorName': '@cname',
-            'orgBelong': '法医中心',
-            'part': '腹部',
-            'taskStage|1': input.filters.taskStage == 'progressing'
-              ? ['processing', 'confirming']
-              : input.filters.taskStage,
-          }],
-        },
-        stat: usefulMockData.okStat,
-      });
-      setTimeout(() => resolve(mocked), 1230);
-    },
   },
   // 获取任务详情
   taskDetail: {
@@ -529,38 +381,6 @@ const filters = {
         task_confirm_by: 'organization',
       };
     },
-    handlerr: (resolve, reject, name, input) => {
-      let mocked = {
-        data: {
-          taskDetail: Mock.mock({
-            'taskId': input.taskId,
-            'name': '@cname', 
-            'gender|1-2': 2,
-            'idcard': '@id',
-            'part': '春树里',
-            'method': '@word',
-            'time': '@date',
-            'description': '@cparagraph',
-            'age|10-88': 0,
-          }),
-          operatorDetail: {
-            'name': '操作员姓名',
-            'tel': '125643234565',
-          },
-          orgDetail: {
-            name: 'ORG',
-            tel: 'ORG123456',
-          },
-          taskStage: 'processing',
-          task_attachment_is_downloaded: false,
-          task_attachment_url: 'https://baidu.com',
-          task_report_url: false, // 'https://weibo.com',
-          can_operator_confirm: false,
-        },
-        stat: usefulMockData.okStat,
-      };
-      setTimeout(() => resolve(mocked), 1000);
-    },
   },
   // 领取任务 @
   receiveTask: {
@@ -568,17 +388,6 @@ const filters = {
     method: 'GET',
     url: inp => API_SERVER_URL + `/tasks/operate/${inp.taskId}?action=receive`,
     trim: rep => rep.data || {},
-    handlerr: (resolve, reject, name, input) => {
-      if(input.taskId & 1) {
-        setTimeout(() => resolve({
-          stat: usefulMockData.okStat,
-        }), 300);
-      } else {
-        setTimeout(() => reject({
-          stat: usefulMockData.failStat,
-        }), 1000);
-      }
-    },
   },
   // 上传报告文件 @ $
   uploadTaskReport: {
@@ -594,15 +403,6 @@ const filters = {
     trim: rep => ({
       task_report_url: downloadUrlFilter(rep.data && rep.data.task_report_url) || true,
     }),
-    handlerr: (resolve, reject, name, input) => {
-      setTimeout(() => resolve({
-        stat: usefulMockData.okStat,
-        data: {
-          taskReportUrl: 'https://www.bing.com',
-          canOperatorConfirm: true,
-        },
-      }), 1000);
-    },
   },
   // 确认任务 @
   confirmTask: {
@@ -610,20 +410,13 @@ const filters = {
     method: 'GET',
     url: inp => API_SERVER_URL + `/tasks/operate/${inp.taskId}?action=confirm`,
     trim: rep => rep.data,
-    handlerr: (resolve, reject, name, input) => {
-      if(input.taskId & 1) {
-        setTimeout(() => resolve({
-          stat: usefulMockData.okStat,
-        }), 300);
-      } else {
-        setTimeout(() => reject({
-          stat: usefulMockData.failStat,
-        }), 1000);
-      }
-    },
   },
 };
 
+// 开发环境下向 filter 注入 handler
+if(process.env.NODE_ENV == 'development') {
+  _.merge(filters, require('./apier-mock.js').default);
+}
 
 export default new CattleBridge({
   debug: (process.env.NODE_ENV === 'development'),

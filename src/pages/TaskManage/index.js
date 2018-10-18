@@ -86,7 +86,6 @@ class TaskManage extends React.Component {
     }
   }
 
-
   render() {
     const genderMap = { male: '男', female: '女', 0: '男', 1: '女' };
     const taskStageMap = {

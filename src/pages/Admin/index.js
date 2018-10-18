@@ -9,8 +9,8 @@ import withAsyncComponent from '@/utils/asyncComponent';
 import { UserCtx } from '@/contexts/contexts.js';
 
 // Routes for different identities
+const WithAsyncTaskManage = withAsyncComponent(() => import('@/pages/TaskManage'));
 const WithTaskManageStatus = ({match}) => {
-  const WithAsyncTaskManage = withAsyncComponent(() => import('@/pages/TaskManage'));
   return (<WithAsyncTaskManage defaultFilters={{
     taskStage: match.params.taskStage,
   }} />);

@@ -71,7 +71,6 @@ class ExpandedDetailRow extends React.Component {
       // Do Nothing
     }
 
-    // console.log(prevProps, this.props);
     // let prevTaskId = prevProps.taskId;
     // let prevTaskIdInState = prevState.detailData.taskDetail.taskId;
     // let prevTaskIdInState = prevState.currentTaskId;
