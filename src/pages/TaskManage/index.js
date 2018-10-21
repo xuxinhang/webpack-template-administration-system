@@ -1,6 +1,7 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { PageHeader } from '@/comps/PageHeader';
-import { Table, Button, Icon, Message } from 'antd';
+import { Table, Message } from 'antd';
 const { Column } = Table;
 import { ExpandedDetailRow } from './ExpandedDetailRow';
 import apier from '@/utils/apier';
@@ -145,20 +146,19 @@ class TaskManage extends React.Component {
           expandedRowClassName={() => 'ds-table-expanded-row'}
         >
           {/**/}
-          <Column title="编号" dataIndex="num" align="right" width={60}/>
+          <Column title="编号" dataIndex="num" className="ds-table-first-column" width={60} />
           <Column title="姓名" dataIndex="name" />
           <Column title="性别" dataIndex="gender" render={text => genderMap[text] || ''} />
           <Column title="创建时间" dataIndex="createdTime" />
-          <Column title="机构客户" dataIndex="orgName" />
+          <Column title="机构用户" dataIndex="orgName" />
           <Column title="上传机构" dataIndex="orgBelong" />
           <Column title="操作员" dataIndex="operatorName" />
           <Column title="测量部位" dataIndex="part" />
           <Column title="任务状态" dataIndex="taskStage" render={text => taskStageMap[text] || ''} />
-          <Column title="操作" key="op" align="right"
-            className="ds-table-last-column"
-            render={(text, record, index) => (
+          <Column title="操作" key="op" align="right" className="ds-table-last-column" />
+          {/*   render={(text, record, index) => (
               <>
-                {/*this.state.tableExpandedRowKeys.includes(record.taskId)
+                {this.state.tableExpandedRowKeys.includes(record.taskId)
                   ? <Button size="small"
                       data-key={record.taskId}
                       data-index={index}
@@ -173,16 +173,18 @@ class TaskManage extends React.Component {
                     >
                       查看更多
                     </Button>
-                */}
+                }
               </>  
-            )}
-          />
+            ) */}
         </Table>
       </>
     ); // () => toggleExpandedRow(record.taskId, index, false)
   }
-
 }
+
+TaskManage.propTypes = {
+  defaultFilters: PropTypes.object,
+};
 
 
 export default TaskManage; 

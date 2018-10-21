@@ -60,7 +60,7 @@ const menuLinks = [
     name: '账号管理',
     menus: [
       { path: 'operatorManage', title: '操作员管理', access: ['administrator'] },
-      { path: 'organizationManage', title: '机构客户管理', access: ['administrator'] },
+      { path: 'organizationManage', title: '机构用户管理', access: ['administrator'] },
       // { path: 'addOperator', title: '添加操作员[Temp]', access: ['administrator'] },
       // { path: 'addOrganization', title: '添加机构账户[Temp]', access: ['administrator'] },
     ],

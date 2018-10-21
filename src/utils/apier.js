@@ -133,6 +133,17 @@ const taskItemMapper = objectMapper([
   ['taskStage', 'stage', v => taskStageMap[v], v => taskStageMap[v]],
 ]);
 
+const taskOperationMapper = objectMapper([
+  ['allowOperatorConfirm', 'allowOperatorConfirm', Boolean],
+  ['confirmedBy', 'confirmedBy', v => identMap[v], v => identMap[v]],
+  ['confirmingTime', 'confirmingTime', Number, Number],
+  ['downloadingAttachmentTime', 'downloadingAttachmentTime', Number, Number],
+  ['uploadingReportTime', 'uploadingReportTime', Number, Number],
+  ['receivingTime', 'receivingTime', Number, Number],
+  ['taskAttachmentUrl', 'taskAttachmentUrl', downloadUrlFilter, downloadUrlFilter],
+  ['taskReportUrl', 'taskReportUrl', downloadUrlFilter, downloadUrlFilter],
+]);
+
 const identMap = {
   0: 'administrator',
   1: 'operator',
@@ -374,11 +385,12 @@ const filters = {
         operatorDetail: operatorItemMapper(rep.data.operator_detail, true),
         orgDetail: organizationItemMapper(rep.data.organization_detail, true),
         taskStage: taskStageMap[rep.data.stage],
-        task_attachment_is_downloaded: !!rep.data.task_attachment_is_downloaded,
-        task_attachment_url: downloadUrlFilter(rep.data.task_attachment_url),
-        task_report_url: downloadUrlFilter(rep.data.task_report_url),
-        can_operator_confirm: !!rep.data.can_operator_confirm,
-        task_confirm_by: 'organization',
+        // task_attachment_is_downloaded: !!rep.data.task_attachment_is_downloaded,
+        // task_attachment_url: downloadUrlFilter(rep.data.task_attachment_url),
+        // task_report_url: downloadUrlFilter(rep.data.task_report_url),
+        // can_operator_confirm: !!rep.data.can_operator_confirm,
+        // task_confirm_by: 'organization',
+        taskOperation: taskOperationMapper(rep.data.taskOperation),
       };
     },
   },

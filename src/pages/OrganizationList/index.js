@@ -143,12 +143,12 @@ class OrganizationList extends React.Component {
 
     return (
       <>
-        <PageHeader title="机构客户账号管理">
+        <PageHeader title="机构用户账号管理">
           <Link to="/admin/addOrganization">
             <Button size="small" type="primary"
               className="button--deep-gray-primary  ds-button-round-corner"
             >
-              新建机构客户账号
+              新建机构用户账号
             </Button>
           </Link>
         </PageHeader>

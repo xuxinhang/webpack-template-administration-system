@@ -1,7 +1,9 @@
 import React from 'react';
-import { Row, Col, Button, Icon, Popover, Modal, Message, Spin, Upload } from 'antd';
+import { Row, Col, Button, Icon, Popover, Tooltip, Modal, Message, Spin, Upload } from 'antd';
 import DsSteps from '@/comps/DsSteps';
 import { UserCtx } from '@/contexts/contexts.js';
+import PropTypes from 'prop-types';
+import moment from 'moment';
 import apier from '@/utils/apier.js';
 import formRules from '@/utils/commonFormRules.js';
 
@@ -16,6 +18,8 @@ class ExpandedDetailRow extends React.Component {
     super(props);
 
     this.receiveTaskBtnClickHandler = this.receiveTaskBtnClickHandler.bind(this);
+    this.confirmBtnClickHandler = this.confirmBtnClickHandler.bind(this);
+    this.generateDownloadBtnClickHandler = this.generateDownloadBtnClickHandler.bind(this);
 
     this.state = {
       // 数据
@@ -41,10 +45,20 @@ class ExpandedDetailRow extends React.Component {
           tel: '@tel',
         },
         taskStage: 'receiving',
-        task_attachment_is_downloaded: false,
-        task_attachment_url: '',
-        task_report_url: '',
-        can_operator_confirm: false,
+        // task_attachment_is_downloaded: false,
+        // task_attachment_url: '',
+        // task_report_url: '',
+        // can_operator_confirm: false,
+        taskOperation: {
+          confirmedBy: 'organization',
+          allowOperatorConfirm: false,
+          receivingTime: 1539959905632,
+          downloadingAttachmentTime: 1539959905632,
+          uploadingReportTime: 1539959905632,
+          confirmingTime: 1539959905632,
+          taskAttachmentUrl: 'https://baidu.com',
+          taskReportUrl: 'https://weibo.com',
+        },
       },
       // UI
       dataLoading: false,
@@ -116,6 +130,7 @@ class ExpandedDetailRow extends React.Component {
           Message.success('此任务已被你领取');
           this.setState(prevState => {
             prevState.detailData.taskStage = 'processing';
+            prevState.detailData.taskOperation.receivingTime = Date.now();
             return { detailData: prevState.detailData };
           });
         })
@@ -129,10 +144,58 @@ class ExpandedDetailRow extends React.Component {
     });
   }
 
+  confirmBtnClickHandler() {
+    Modal.confirm({
+      title: '确实要确认此任务吗？',
+      content: '',
+      onOk: async close => {
+        try {
+          await apier.fetch('confirmTask', {
+            taskId: this.props.taskId, // [TODO]
+          });
+          this.setState(prevState => {
+            prevState.detailData.taskOperation.confirmingTime = Date.now();
+            prevState.detailData.taskStage = 'finished';
+            return { detailData: { ...prevState.detailData }};
+          });
+          close();
+        } catch({ stat }) {
+          close();
+          Modal.error({
+            title: '暂时无法确认此任务',
+            content: stat.frimsg,
+          });
+        }
+      },
+    });
+  }
+
+  generateDownloadBtnClickHandler(keyName, cover) {
+    return () => {
+      this.setState(prevState => {
+        if(cover) {
+          prevState.detailData.taskOperation[keyName] = Date.now();
+        } else {
+          let prev = prevState.detailData.taskOperation[keyName];
+          prevState.detailData.taskOperation[keyName] = prev
+          ? prev
+          : Date.now();
+        }
+        return { detailData: { ...prevState.detailData }};
+      });
+    };
+  }
 
   render() {
     let detailData = this.state.detailData;
-    let toggleStage = () => {
+
+    const identNameMap = {
+      operator: '操作员',
+      organization: '机构用户',
+      administrator: '管理员',
+    };
+
+    const toggleStage = () => {
       const mp = {
         receiving: 'processing',
         processing: 'confirming',
@@ -156,17 +219,17 @@ class ExpandedDetailRow extends React.Component {
     };
 
     const uploadBtnProps = {
-      onChange: ({ file, fileList }) => {
-        // let checker = formRules.uploadFile.validator;
-        // checker([], fileList, errors => {
-        //   if(errors.length) {
-        //   } else {
-        //     this.setState({
-        //       uploadBtnFileList: fileList.length <= 1 ? fileList : [file],
-        //     });
-        //   }
-        // });
-      },
+      // onChange: ({ file, fileList }) => {
+      //   let checker = formRules.uploadFile.validator;
+      //   checker([], fileList, errors => {
+      //     if(errors.length) {
+      //     } else {
+      //       this.setState({
+      //         uploadBtnFileList: fileList.length <= 1 ? fileList : [file],
+      //       });
+      //     }
+      //   });
+      // },
       beforeUpload: file => {
         let errors = formRules.uploadFile.syncValidator([], [file]);
         if(errors.length) {
@@ -216,12 +279,17 @@ class ExpandedDetailRow extends React.Component {
           this.setState(prevState => ({
             detailData: {
               ...prevState.detailData,
-              task_report_url: data.task_report_url,
-              can_operator_confirm: data.canOperatorConfirm || false,
+              taskOperation: {
+                ...prevState.detailData.taskOperation,
+                uploadingReportTime: Date.now(),
+                taskReportUrl: data.task_report_url,
+                allowOperatorConfirm: data.canOperatorConfirm || false,                
+              },
               taskStage: 'confirming',
             },
             uploadBtnLoading: false,
           }));
+          this.generateDownloadBtnClickHandler('uploadingReportTime', false)();
           onSuccess();
         } catch({ stat }) {
           onError();
@@ -230,29 +298,7 @@ class ExpandedDetailRow extends React.Component {
       },
     };
 
-    const confirmBtnClickHandler = () => {
-      Modal.confirm({
-        title: '确实要确认此任务吗？',
-        content: '',
-        onOk: async close => {
-          try {
-            await apier.fetch('confirmTask', {
-              taskId: this.props.taskId, // [TODO]
-            });
-            this.setState(prevState => ({
-              detailData: { ...prevState.detailData, taskStage: 'finished' },
-            }));
-            close();
-          } catch({ stat }) {
-            close();
-            Modal.error({
-              title: '暂时无法确认此任务',
-              content: stat.frimsg,
-            });
-          }
-        },
-      });
-    };
+    const formatTimestamp = t => moment(new Date(t)).format('YYYY/MM/DD hh:mm');
 
     return (
       <Spin spinning={this.state.dataLoading}>
@@ -293,7 +339,7 @@ class ExpandedDetailRow extends React.Component {
                     <td>{detailData.taskDetail.part}</td>
                   </tr>
                   <tr>
-                    <th>测量方法</th>
+                    <th>测量内容</th>
                     <td>{detailData.taskDetail.method}</td>
                   </tr>
                   <tr>
@@ -312,7 +358,7 @@ class ExpandedDetailRow extends React.Component {
             <p styleName="section_title">处理进度</p>
             <UserCtx.Consumer>
             {info => {
-              let currentStepIndex = computeCurrentStepIndex(this.state.detailData.taskStage);
+              let currentStepIndex = computeCurrentStepIndex(detailData.taskStage);
               return (
               <DsSteps
                 styleName="step-bar-wrap"
@@ -330,7 +376,13 @@ class ExpandedDetailRow extends React.Component {
 
                 <DsSteps.DsStep title="待领取">
                 {currentStepIndex > 2
-                ? '操作员已领取'
+                ? <Tooltip title={
+                    detailData.taskOperation.receivingTime
+                    ? `领取于 ${formatTimestamp(detailData.taskOperation.receivingTime)}`
+                    : undefined
+                  }>
+                    ✔操作员已领取
+                  </Tooltip>
                 : <>
                     ⚠此任务尚未领取 <br />
                     {info.ident == 'operator' && 
@@ -338,26 +390,50 @@ class ExpandedDetailRow extends React.Component {
                   </>}
                 </DsSteps.DsStep>
 
-                <DsSteps.DsStep title="处理中" styleName="upload-file-step-block">
+                <DsSteps.DsStep
+                  title={currentStepIndex > 3
+                    ? ('处理用时 '
+                      + moment(
+                          detailData.taskOperation.uploadingReportTime
+                          - detailData.taskOperation.receivingTime
+                        ).format('hh时mm分')
+                      )
+                    : '处理中'
+                  }
+                  styleName="upload-file-step-block"
+                >
                 {currentStepIndex < 3
                 ? '未开始'
                 : <>
-                    {this.state.detailData.task_attachment_is_downloaded
-                    ? '✔操作员已下载附件'
-                    : '⚠操作员尚未下载附件'}
+                    {detailData.taskOperation.downloadingAttachmentTime <= 0
+                    ? '⚠操作员尚未下载附件'
+                    : <Tooltip title={
+                        detailData.taskOperation.downloadingAttachmentTime
+                        ? `下载于 ${formatTimestamp(detailData.taskOperation.downloadingAttachmentTime)}`
+                        : undefined
+                      }>
+                        ✔操作员已下载附件
+                      </Tooltip>}
                     <a
                       target="_blank"
                       rel="noopener noreferrer"
                       download
-                      href={this.state.detailData.task_attachment_url}
+                      href={`${detailData.taskOperation.taskAttachmentUrl}?task_id=${this.props.taskId}`}
+                      onClick={this.generateDownloadBtnClickHandler('downloadingAttachmentTime', false)}
                     >
                       &nbsp;<Icon type="download" />
                     </a>
                     <br />
 
-                    {this.state.detailData.task_report_url
-                    ? '✔操作员已上传报告'
-                    : '⚠操作员尚未上传报告'}
+                    {detailData.taskOperation.uploadingReportTime <= 0
+                    ? '⚠操作员尚未上传报告'
+                    : <Tooltip title={
+                        detailData.taskOperation.uploadingReportTime
+                        ? `上传于 ${formatTimestamp(detailData.taskOperation.uploadingReportTime)}`
+                        : undefined
+                      }>
+                        ✔操作员已上传报告
+                      </Tooltip>}
                     {info.ident == 'operator' && currentStepIndex < 5 &&
                     <>
                       <Upload
@@ -381,15 +457,15 @@ class ExpandedDetailRow extends React.Component {
                       {(info.ident == 'organization' || info.ident == 'administrator') &&
                       <>
                         操作员：<br />
-                        {this.state.detailData.operatorDetail.name}<br />
-                        {this.state.detailData.operatorDetail.tel}<br />
+                        {detailData.operatorDetail.name}<br />
+                        {detailData.operatorDetail.tel}<br />
                         <br />
                       </>}
                       {(info.ident == 'operator' || info.ident == 'administrator') &&
                       <>
-                        机构客户：<br />
-                        {this.state.detailData.orgDetail.name}<br />
-                        {this.state.detailData.orgDetail.tel}<br />
+                        机构用户：<br />
+                        {detailData.orgDetail.name}<br />
+                        {detailData.orgDetail.tel}<br />
                         <br />
                       </>}
                     </>
@@ -399,24 +475,31 @@ class ExpandedDetailRow extends React.Component {
                 </DsSteps.DsStep>
 
                 <DsSteps.DsStep title="待确认">
-                  {this.state.detailData.task_report_url && 
-                  this.state.detailData.task_report_url !== true &&
+                  {detailData.taskOperation.taskReportUrl && 
+                   detailData.taskOperation.taskReportUrl !== true &&
                   <a
                     target="_blank"
                     rel="noopener noreferrer"
                     download
-                    href={this.state.detailData.task_report_url}
+                    href={`${detailData.taskOperation.taskReportUrl}?task_id=${this.props.taskId}`}
                   >
-                    点击下载报告
+                    点击下载报告&nbsp;<Icon type="download" />
                   </a>}
+
                   <br />
                   {currentStepIndex > 4
-                  ? '此任务已被确认'
+                  ? <Tooltip title={
+                      detailData.taskOperation.confirmingTime
+                      ? `确认于 ${formatTimestamp(detailData.taskOperation.confirmingTime)}`
+                      : undefined
+                    }>
+                      ✔此任务已被{identNameMap[detailData.taskOperation.confirmedBy]}确认
+                    </Tooltip>
                   : currentStepIndex == 4
                   ? <>
-                    {(info.ident == 'operator' && this.state.detailData.can_operator_confirm
+                    {(info.ident == 'operator' && detailData.taskOperation.allowOperatorConfirm
                     || info.ident == 'organization' || info.ident == 'administrator') &&
-                      <Button size="small" onClick={confirmBtnClickHandler}>点击确认</Button>}
+                      <Button size="small" onClick={this.confirmBtnClickHandler}>点击确认</Button>}
                     </>
                   : '' }
                 </DsSteps.DsStep>
@@ -431,6 +514,28 @@ class ExpandedDetailRow extends React.Component {
     );
   }
 }
+
+
+const FormSubmitDownload = function (props) {
+  let jsonStr = JSON.stringify({ ...props.params, stupidTrash: '=' });
+  let separatorIndex = jsonStr.lastIndexOf('=');
+
+  return (
+    <form method="post" encType="text/plain" action={props.url}>
+      <input type="hidden"
+        name={jsonStr.substr(0, separatorIndex)}
+        value={jsonStr.substr(separatorIndex + 1)}
+      />
+      <button type="submit">
+        {props.children}
+      </button>
+    </form>
+  );
+};
+
+FormSubmitDownload.propTypes = {
+  params: PropTypes.object,
+};
 
 
 export default ExpandedDetailRow;

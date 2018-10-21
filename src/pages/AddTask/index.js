@@ -147,7 +147,7 @@ class RawForm extends React.Component {
             </Form.Item>
           </Col>
           <Col span={8}>
-            <Form.Item label="测量方法">
+            <Form.Item label="测量内容">
             {getFieldDecorator('method', {
               rules: [
                 { max: 40, message: '内容过长, 不超过40字' },

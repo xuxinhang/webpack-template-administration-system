@@ -15,7 +15,7 @@ function retrieveLoginInfo() {
     try {
       let info = { ...defaultLoginInfo, ...JSON.parse(stored) };
       // eslint-disable-next-line
-      process.env.NODE_ENV === 'development' && console.log(info);
+      // process.env.NODE_ENV === 'development' && console.log(info);
       if(checkExpireTime(info) || !info.token) {
         exitLogin();
         return {...defaultLoginInfo};
