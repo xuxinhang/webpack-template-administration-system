@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Router } from 'react-router';
 import { Form, Input, Button, Alert, Modal } from 'antd';
 import { PageHeader } from '@/comps/PageHeader';
 import apier from '@/utils/apier.js';
@@ -62,7 +61,7 @@ class InitialForm extends Component {
           formResult: ['error', '修改失败：' + stat.frimsg],
         });
       });
-    })
+    });
   }
 
   render() {

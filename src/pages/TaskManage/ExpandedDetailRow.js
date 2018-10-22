@@ -481,7 +481,7 @@ class ExpandedDetailRow extends React.Component {
                     target="_blank"
                     rel="noopener noreferrer"
                     download
-                    href={`${detailData.taskOperation.taskReportUrl}?task_id=${this.props.taskId}`}
+                    href={`${detailData.taskOperation.taskReportUrl}`}
                   >
                     点击下载报告&nbsp;<Icon type="download" />
                   </a>}
@@ -493,7 +493,7 @@ class ExpandedDetailRow extends React.Component {
                       ? `确认于 ${formatTimestamp(detailData.taskOperation.confirmingTime)}`
                       : undefined
                     }>
-                      ✔此任务已被{identNameMap[detailData.taskOperation.confirmedBy]}确认
+                      ✔已被{identNameMap[detailData.taskOperation.confirmedBy]}确认
                     </Tooltip>
                   : currentStepIndex == 4
                   ? <>
@@ -516,7 +516,7 @@ class ExpandedDetailRow extends React.Component {
 }
 
 
-const FormSubmitDownload = function (props) {
+/* const FormSubmitDownload = function (props) {
   let jsonStr = JSON.stringify({ ...props.params, stupidTrash: '=' });
   let separatorIndex = jsonStr.lastIndexOf('=');
 
@@ -535,7 +535,7 @@ const FormSubmitDownload = function (props) {
 
 FormSubmitDownload.propTypes = {
   params: PropTypes.object,
-};
+}; */
 
 
 export default ExpandedDetailRow;

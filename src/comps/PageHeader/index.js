@@ -7,5 +7,5 @@ export function PageHeader(props) {
       {props.title && <div styleName="page-title">{props.title}</div>}
       {props.children}
     </div>
-  )
+  );
 }

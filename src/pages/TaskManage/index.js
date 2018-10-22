@@ -96,10 +96,10 @@ class TaskManage extends React.Component {
       'finished': '已完结',
     };
 
-    const toggleExpandClickHandler = e => {
+    /* const toggleExpandClickHandler = e => {
       let ds = e.target.dataset;
       toggleExpandedRow(ds.key, ds.index, ds.tar);
-    };
+    }; */
 
     const toggleExpandedRow = (key, index, tar) => {
       this.setState(state => {

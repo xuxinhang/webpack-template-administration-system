@@ -6,7 +6,7 @@ import apier from '@/utils/apier.js';
 import formRules from '@/utils/commonFormRules.js';
 
 
-import sty from './AddOperator.md.sass';
+import './AddOperator.md.sass';
 // import '../../styles/common.sass';
 
 class AddOperator extends React.Component {
