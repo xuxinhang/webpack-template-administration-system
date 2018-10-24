@@ -4,8 +4,9 @@
     [
       "@babel/preset-env",
       {
-        "useBuiltIns": false,
         "debug": true,
+        "useBuiltIns": "usage",
+        "exclude": ["es6.promise"],
       }
     ],
   ],

@@ -8,11 +8,13 @@ import apier from '@/utils/apier.js';
 class LoginPage extends Component {
   render() {
     return (
-      <section styleName="login-wrap">
-        <Card styleName="login-card" title="🔑 登录您的账户">
-          <WrappedNormalLoginForm />
-        </Card>
-      </section>
+      <div styleName="login-wrapper">
+        <section styleName="login-wrap">
+          <Card styleName="login-card" title="🔑 登录您的账户">
+            <WrappedNormalLoginForm />
+          </Card>
+        </section>
+      </div>
     );
   }
 }

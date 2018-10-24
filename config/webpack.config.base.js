@@ -95,7 +95,7 @@ module.exports = {
         loader: require.resolve('babel-loader'),
         options: {
           babelrc: true,
-          cacheDirectory: true,
+          // cacheDirectory: true,
         },
       },
       {

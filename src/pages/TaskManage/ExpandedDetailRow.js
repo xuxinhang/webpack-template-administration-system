@@ -298,7 +298,18 @@ class ExpandedDetailRow extends React.Component {
       },
     };
 
-    const formatTimestamp = t => moment(new Date(t)).format('YYYY/MM/DD hh:mm');
+    const formatTimestamp = t => moment(new Date(t)).format('YYYY/MM/DD HH:mm');
+    const formatTimeDiff = (a, b) => {
+      let ds = (a - b) / 1000;
+      let dm = Math.round(ds / 60);
+      let dh = Math.floor(dm / 60);
+      let mm = dm % 60;
+      let dd = Math.floor(dh / 24);
+      // let hh = dh % 24;
+      return dd == 0
+             ? dh == 0 ? `${mm}分钟` : `${dh}时${mm}分`
+             : `${dd}天${Math.round(dm / 60) % 24}时`;
+    };
 
     return (
       <Spin spinning={this.state.dataLoading}>
@@ -393,10 +404,10 @@ class ExpandedDetailRow extends React.Component {
                 <DsSteps.DsStep
                   title={currentStepIndex > 3
                     ? ('处理用时 '
-                      + moment(
-                          detailData.taskOperation.uploadingReportTime
-                          - detailData.taskOperation.receivingTime
-                        ).format('hh时mm分')
+                      + formatTimeDiff(
+                          detailData.taskOperation.uploadingReportTime,
+                          detailData.taskOperation.receivingTime
+                        )
                       )
                     : '处理中'
                   }

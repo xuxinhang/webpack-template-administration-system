@@ -30,7 +30,8 @@ class InitialForm extends Component {
     this.formSubmitHandler = this.formSubmitHandler.bind(this);
   }
 
-  formSubmitHandler() {
+  formSubmitHandler(e) {
+    e.preventDefault();
     const formOp = this.props.form;
 
     formOp.validateFields((errors, values) => {
@@ -96,7 +97,7 @@ class InitialForm extends Component {
           rules: [{ required: true, message: '请输入旧密码'}],
           validateTrigger: 'onBlur',
         })(
-          <Input type="password" autocomplete="current-password" />
+          <Input type="password" autoComplete="current-password" />
         )}
         </Form.Item>
 
@@ -105,7 +106,7 @@ class InitialForm extends Component {
           rules: [{ required: true, message: '请输入新密码'}],
           validateTrigger: 'onBlur',
         })(
-          <Input type="password" autocomplete="new-password" />
+          <Input type="password" autoComplete="new-password" />
         )}
         </Form.Item>
 
@@ -114,7 +115,7 @@ class InitialForm extends Component {
           rules: [{ required: true, message: '请再次输入新密码'}],
           validateTrigger: 'onBlur',
         })(
-          <Input type="password" autocomplete="new-password" />
+          <Input type="password" autoComplete="new-password" />
         )}
         </Form.Item>
 

@@ -10,7 +10,6 @@ const usefulMockData = {
 const filters = {
   // 登录 @
   login: {
-    name: 'login',
     handlerr: (resolve, reject, name, input) => {
       setTimeout(() => {
         resolve({
@@ -27,7 +26,6 @@ const filters = {
   },
   // 登出 @
   logout: {
-    name: 'logout',
     handlerr: (resolve, reject) => {
       setTimeout(() => {
         resolve({
